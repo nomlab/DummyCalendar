@@ -1,0 +1,97 @@
+#!/usr/bin/env ruby
+
+################################################################
+# rbenv support:
+# If this file is a symlink, and bound to a specific ruby
+# version via rbenv (indicated by RBENV_VERSION),
+# I want to resolve the symlink and re-exec
+# the original executable respecting the .ruby_version
+# which should indicate the right version.
+#
+if File.symlink?(__FILE__) and ENV["RBENV_VERSION"]
+  ENV["RBENV_VERSION"] = nil
+  shims_path = File.expand_path("shims", ENV["RBENV_ROOT"])
+  ENV["PATH"] = shims_path + ":" + ENV["PATH"]
+  exec(File.readlink(__FILE__), *ARGV)
+end
+
+gemfile = File.expand_path("../../Gemfile", __FILE__)
+
+if File.exists?(gemfile + ".lock")
+  ENV["BUNDLE_GEMFILE"] = gemfile
+  require "bundler/setup"
+end
+
+require "rubygems"
+require File.expand_path("../../lib/dummy_calendar", __FILE__)
+
+def print_events(dates)
+  dates.each do |date|
+    puts 'dummy' + ', ' + date.strftime("%Y/%m/%d")
+  end
+end
+
+def generate(name)
+  dc = DummyCalendar::Generator.new
+  start_year = 2015
+  end_year   = 2016
+  range = Date.parse("#{start_year}-04-01")..Date.parse("#{end_year}-03-30")
+
+  case name
+  when :gn_meeting
+    dstart = Date.parse("#{start_year}-04-03")
+    dc.set_interval({:n => 14, :range => -5..5}, 1)
+    dc.add_param(:holiday, {:flag => false}, 1)
+    dc.add_param(:other_events, {:n => 50, :seed => 9999}, 1)
+    (start_year..end_year).each do |year|
+      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-08-10"), :dend => Date.parse("#{start_year}-08-14")}, 1)
+      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-12-25"), :dend => Date.parse("#{start_year + 1}-01-03")}, 1)
+      dc.add_param(:deadline, {:date => Date.parse("#{start_year + 1}-02-07")}, 1)
+    end
+  when :gn_dev_meeting
+    dstart = Date.parse("#{start_year}-04-03")
+    dc.set_interval({:n => 14, :range => -5..5}, 1)
+    dc.add_param(:holiday, {:flag => false}, 1)
+    dc.add_param(:other_events, {:n => 50, :seed => 9999}, 1)
+    (start_year..end_year).each do |year|
+      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-08-10"), :dend => Date.parse("#{start_year}-08-14")}, 1)
+      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-12-25"), :dend => Date.parse("#{start_year + 1}-01-03")}, 1)
+    end
+  when :sample_all_params
+    dstart = Date.parse("#{start_year}-04-03")
+    dc.set_interval({:n => 14, :range => -5..5}, 1)
+    dc.add_param(:wday, {:wday => :Tue, :flag => true}, 1)
+    dc.add_param(:wday, {:wday => :Mon, :flag => false}, 1)
+    dc.add_param(:holiday, {:flag => false}, 1)
+    dc.add_param(:monthweek, {:month => 10, :week => 1, :flag => true}, 1)
+    dc.add_param(:month, {:month => 9, :flag => true}, 1)
+    dc.add_param(:date, {:month => 8, :day => 20, :flag => true}, 1)
+    dc.add_param(:other_events, {:n => 50, :seed => 9999}, 1)
+    dc.add_param(:order, {:date => Date.parse("#{start_year}-05-10"), :direction => :before}, 1)
+    dc.add_param(:simultaneous, {:date => Date.parse("#{start_year}-09-23")}, 1)
+    (start_year..end_year).each do |year|
+      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-08-10"), :dend => Date.parse("#{start_year}-08-14")}, 1)
+      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-12-25"), :dend => Date.parse("#{start_year + 1}-01-03")}, 1)
+      dc.add_param(:deadline, {:date => Date.parse("#{start_year + 1}-02-07")}, 1)
+    end
+  else
+    return nil
+  end
+
+  return dc.generate(dstart, range)
+end
+
+###############################################################
+
+unless ARGV[0]
+  puts "ERROR: No argument"
+  puts "Please input, for example, `ruby thisfile gn_meeting`"
+  exit -1
+end
+
+unless dates = generate(ARGV[0].to_sym)
+  puts "ERROR: Recurrence name `" + ARGV[0] + "` not found"
+  exit -1
+end
+
+print_events(dates)

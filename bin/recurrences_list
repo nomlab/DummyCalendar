@@ -1,0 +1,9 @@
+#!/bin/sh
+
+dir=$(cd $(dirname $0);pwd)
+file=${dir}/generate_dummy
+alias get_num_from_linenum="sed -e 's/:.*//g'"
+head=`grep -n "def generate" $file | get_num_from_linenum`
+tail=`sed -n "$head,10000p" $file | grep -n -m 1 '^end' | get_num_from_linenum`
+tail=`expr $head + $tail - 1`
+sed -n "${head},${tail}p" $file | grep -o -E 'when :(.*)' $file | sed -e 's/when ://g'
