@@ -1,0 +1,8 @@
+dstart = Date.parse("#{start_year}-04-03")
+dc.set_interval({:n => 14, :range => -5..5}, 1)
+dc.add_param(:holiday, {:flag => false}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 9999}, 1)
+(start_year..end_year).each do |year|
+  dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-08-10"), :dend => Date.parse("#{start_year}-08-14")}, 1)
+  dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-12-25"), :dend => Date.parse("#{start_year + 1}-01-03")}, 1)
+end

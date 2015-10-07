@@ -25,6 +25,8 @@ end
 require "rubygems"
 require File.expand_path("../../lib/dummy_calendar", __FILE__)
 
+DB_PATH = File.expand_path("../../patterns", __FILE__)
+
 def print_events(name, dates)
   dates.each do |date|
     puts name + ', ' + date.strftime("%Y/%m/%d")
@@ -37,43 +39,9 @@ def generate(name, dstart, dend)
   start_year = dstart.year
   end_year = dend.year
 
-  case name
-  when :gn_meeting
-    dstart = Date.parse("#{start_year}-04-03")
-    dc.set_interval({:n => 14, :range => -5..5}, 1)
-    dc.add_param(:holiday, {:flag => false}, 1)
-    dc.add_param(:other_events, {:n => 50, :seed => 9999}, 1)
-    (start_year..end_year).each do |year|
-      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-08-10"), :dend => Date.parse("#{start_year}-08-14")}, 1)
-      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-12-25"), :dend => Date.parse("#{start_year + 1}-01-03")}, 1)
-      dc.add_param(:deadline, {:date => Date.parse("#{start_year + 1}-02-07")}, 1)
-    end
-  when :gn_dev_meeting
-    dstart = Date.parse("#{start_year}-04-03")
-    dc.set_interval({:n => 14, :range => -5..5}, 1)
-    dc.add_param(:holiday, {:flag => false}, 1)
-    dc.add_param(:other_events, {:n => 50, :seed => 9999}, 1)
-    (start_year..end_year).each do |year|
-      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-08-10"), :dend => Date.parse("#{start_year}-08-14")}, 1)
-      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-12-25"), :dend => Date.parse("#{start_year + 1}-01-03")}, 1)
-    end
-  when :sample_all_params
-    dstart = Date.parse("#{start_year}-04-03")
-    dc.set_interval({:n => 14, :range => -5..5}, 1)
-    dc.add_param(:wday, {:wday => :Tue, :flag => true}, 1)
-    dc.add_param(:wday, {:wday => :Mon, :flag => false}, 1)
-    dc.add_param(:holiday, {:flag => false}, 1)
-    dc.add_param(:monthweek, {:month => 10, :week => 1, :flag => true}, 1)
-    dc.add_param(:month, {:month => 9, :flag => true}, 1)
-    dc.add_param(:date, {:month => 8, :day => 20, :flag => true}, 1)
-    dc.add_param(:other_events, {:n => 50, :seed => 9999}, 1)
-    dc.add_param(:order, {:date => Date.parse("#{start_year}-05-10"), :direction => :before}, 1)
-    dc.add_param(:simultaneous, {:date => Date.parse("#{start_year}-09-23")}, 1)
-    (start_year..end_year).each do |year|
-      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-08-10"), :dend => Date.parse("#{start_year}-08-14")}, 1)
-      dc.add_param(:vacation_term, {:dstart => Date.parse("#{start_year}-12-25"), :dend => Date.parse("#{start_year + 1}-01-03")}, 1)
-      dc.add_param(:deadline, {:date => Date.parse("#{start_year + 1}-02-07")}, 1)
-    end
+  filenames = Dir.glob("#{DB_PATH}/*").map{|path| path.split('/').last}
+  if filenames.include?(name)
+    eval File.read "#{DB_PATH}/#{name}"
   else
     return nil
   end
@@ -98,7 +66,7 @@ rescue
   exit -1
 end
 
-unless dates = generate(ARGV[0].to_sym, dstart, dend)
+unless dates = generate(ARGV[0], dstart, dend)
   puts "ERROR: Recurrence name `" + ARGV[0] + "` not found"
   exit -1
 end
