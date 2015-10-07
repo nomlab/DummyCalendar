@@ -53,7 +53,7 @@ end
 
 unless ARGV[0] && ARGV[1] && ARGV[2]
   puts "ERROR: Invalid argument"
-  puts "Please input, for example, `ruby generate_dummy gn_meeting 20150401 20160330`"
+  puts "Please input, for example, `./bin/generate_dummy 001_gn_meeting 20150401 20160330`"
   exit -1
 end
 
@@ -68,6 +68,7 @@ end
 
 unless dates = generate(ARGV[0], dstart, dend)
   puts "ERROR: Recurrence name `" + ARGV[0] + "` not found"
+  puts "Please select name in /patterns/*"
   exit -1
 end
 
