@@ -25,9 +25,9 @@ end
 require "rubygems"
 require File.expand_path("../../lib/dummy_calendar", __FILE__)
 
-def print_events(dates)
+def print_events(name, dates)
   dates.each do |date|
-    puts 'dummy' + ', ' + date.strftime("%Y/%m/%d")
+    puts name + ', ' + date.strftime("%Y/%m/%d")
   end
 end
 
@@ -103,4 +103,4 @@ unless dates = generate(ARGV[0].to_sym, dstart, dend)
   exit -1
 end
 
-print_events(dates)
+print_events('dummy_' + ARGV[0], dates)
