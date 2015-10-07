@@ -31,11 +31,11 @@ def print_events(dates)
   end
 end
 
-def generate(name)
+def generate(name, dstart, dend)
   dc = DummyCalendar::Generator.new
-  start_year = 2015
-  end_year   = 2016
-  range = Date.parse("#{start_year}-04-01")..Date.parse("#{end_year}-03-30")
+  range = dstart..dend
+  start_year = dstart.year
+  end_year = dend.year
 
   case name
   when :gn_meeting
@@ -83,13 +83,22 @@ end
 
 ###############################################################
 
-unless ARGV[0]
-  puts "ERROR: No argument"
-  puts "Please input, for example, `ruby thisfile gn_meeting`"
+unless ARGV[0] && ARGV[1] && ARGV[2]
+  puts "ERROR: Invalid argument"
+  puts "Please input, for example, `ruby generate_dummy gn_meeting 20150401 20160330`"
   exit -1
 end
 
-unless dates = generate(ARGV[0].to_sym)
+begin
+  dstart = Date.parse(ARGV[1])
+  dend   = Date.parse(ARGV[2])
+  raise if dstart >= dend
+rescue
+  puts "ERROR: Invalid date"
+  exit -1
+end
+
+unless dates = generate(ARGV[0].to_sym, dstart, dend)
   puts "ERROR: Recurrence name `" + ARGV[0] + "` not found"
   exit -1
 end
