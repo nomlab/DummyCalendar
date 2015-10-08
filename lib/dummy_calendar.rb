@@ -34,6 +34,10 @@ module DummyCalendar
     class Interval
       attr_accessor :n
 
+      # n     : Interval of up to next start date. So called generally cycle.
+      # range : Range to be able to select as candidates of next start date.
+      #         pivot = previous_start_date + n
+      #         candidates = pivot + range
       def initialize(n, range)
         @n = n; @range = range
       end
@@ -125,7 +129,8 @@ module DummyCalendar
     end
 
     class OtherEvents
-      # n : Number of business trip between 1 year
+      # n    : Number of business trip between 1 year
+      # seed : Seed value for Random
       def initialize(n, seed)
         @n = n; @seed = Random.new(seed)
       end
