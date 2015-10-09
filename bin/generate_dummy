@@ -27,19 +27,7 @@ require File.expand_path("../../lib/dummy_calendar", __FILE__)
 
 DB_PATH = File.expand_path("../../patterns", __FILE__)
 
-def print_events(events)
-  events.each do |e|
-    puts e.pretty_print
-  end
-end
-
-def print_ical(events)
-  events.each do |e|
-    puts e.to_ical
-  end
-end
-
-def generate(name, dstart, dend)
+def generate_dummy_events(name, dstart, dend)
   dc = DummyCalendar::Generator.new
   range = dstart..dend
   start_year = dstart.year
@@ -72,11 +60,13 @@ rescue
   exit -1
 end
 
-unless events = generate(ARGV[0], dstart, dend)
+cal = DummyCalendar::Calendar.new
+unless events = generate_dummy_events(ARGV[0], dstart, dend)
   puts "ERROR: Recurrence name `" + ARGV[0] + "` not found"
   puts "Please select name in /patterns/*"
   exit -1
 end
+cal.add_events(events)
 
-print_events(events)
-#print_ical(events)
+#cal.print_events
+puts cal.to_ics
