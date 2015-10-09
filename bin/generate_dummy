@@ -33,6 +33,12 @@ def print_events(events)
   end
 end
 
+def print_ical(events)
+  events.each do |e|
+    puts e.to_ical
+  end
+end
+
 def generate(name, dstart, dend)
   dc = DummyCalendar::Generator.new
   range = dstart..dend
@@ -73,3 +79,4 @@ unless events = generate(ARGV[0], dstart, dend)
 end
 
 print_events(events)
+#print_ical(events)

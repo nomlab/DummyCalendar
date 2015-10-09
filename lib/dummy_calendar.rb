@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'date'
 require 'holidays'
+require 'icalendar'
 
 module RubyProf
   def profiler(&block)
@@ -245,7 +246,18 @@ module DummyCalendar
     end
 
     def pretty_print
-      return @dstart.strftime("%Y/%m/%d") + ', ' + @summary
+      return dstart.strftime("%Y/%m/%d") + ', ' + summary
+    end
+
+    def to_ical
+      cal = Icalendar::Calendar.new
+      cal.event do |e|
+        e.dtstart     = Icalendar::Values::Date.new(dstart)
+        e.dtend       = Icalendar::Values::Date.new(dend)
+        e.summary     = summary
+        e.description = ''
+      end
+      return cal.to_ical
     end
   end
 
