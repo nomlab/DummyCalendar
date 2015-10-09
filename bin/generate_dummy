@@ -28,7 +28,7 @@ require File.expand_path("../../lib/dummy_calendar", __FILE__)
 DB_PATH = File.expand_path("../../patterns", __FILE__)
 
 def generate_dummy_events(name, dstart, dend)
-  dc = DummyCalendar::Generator.new
+  dc = DummyCalendar::EventGenerator.new
   range = dstart..dend
   start_year = dstart.year
   end_year = dend.year
