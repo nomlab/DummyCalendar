@@ -27,9 +27,9 @@ require File.expand_path("../../lib/dummy_calendar", __FILE__)
 
 DB_PATH = File.expand_path("../../patterns", __FILE__)
 
-def print_events(name, dates)
-  dates.each do |date|
-    puts name + ', ' + date.strftime("%Y/%m/%d")
+def print_events(events)
+  events.each do |e|
+    puts e.pretty_print
   end
 end
 
@@ -66,11 +66,10 @@ rescue
   exit -1
 end
 
-unless result = generate(ARGV[0], dstart, dend)
+unless events = generate(ARGV[0], dstart, dend)
   puts "ERROR: Recurrence name `" + ARGV[0] + "` not found"
   puts "Please select name in /patterns/*"
   exit -1
 end
 
-puts result
-# print_events('dummy_' + ARGV[0], dates)
+print_events(events)

@@ -235,6 +235,20 @@ module DummyCalendar
     end
   end
 
+  class Event
+    attr_accessor :summary, :dstart, :dend
+
+    def initialize(summary, dstart, dend)
+      @summary = summary
+      @dstart = dstart
+      @dend = dend
+    end
+
+    def pretty_print
+      return @dstart.strftime("%Y/%m/%d") + ', ' + @summary
+    end
+  end
+
   class ParamBuilder
     def self.create(name, opt)
       case name
@@ -297,8 +311,7 @@ module DummyCalendar
       dates = ((range.first)..(range.last + 30)).step(1).to_a
 
       next_dstart = dstart
-      result = [{:dstart => next_dstart,
-                 :summary => @summary_rule.create(next_dstart)}]
+      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart)]
 
       # Evaluate all params without interval param
       vals_params = evaluation_values(dates, dstart)
@@ -315,8 +328,7 @@ module DummyCalendar
         next_dstart = range.first + next_dstart_index
         break if next_dstart > range.last
 
-        result << {:dstart => next_dstart,
-                   :summary => @summary_rule.create(next_dstart)}
+        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart)
 
         vals_params = Array.new(next_dstart_index + 1, -999) + vals_params[(next_dstart_index+1)..-1]
       end
