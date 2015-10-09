@@ -1,3 +1,4 @@
+dc.set_summary_rule('sample', :countup)
 dstart = Date.parse("#{start_year}-04-03")
 dc.set_interval({:n => 14, :range => -5..5}, 1)
 dc.add_param(:wday, {:wday => :Tue, :flag => true}, 1)

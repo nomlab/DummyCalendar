@@ -161,6 +161,80 @@ module DummyCalendar
     end
   end
 
+  module SummaryRule
+    class Base
+      def initialize(base_name)
+        @base_name = base_name
+      end
+
+      def create(date)
+      end
+    end
+
+    class NoMakeup < Base
+      def initialize(base_name)
+        super(base_name)
+      end
+
+      def create(date)
+        return @base_name
+      end
+    end
+
+    class Countup < Base
+      def initialize(base_name)
+        @n_th = 1
+        super(base_name)
+      end
+
+      def create(date)
+        s = '第' + @n_th.to_s + '回' + @base_name
+        @n_th += 1
+        return s
+      end
+    end
+
+    class Year < Base
+      def initialize(base_name)
+        super(base_name)
+      end
+
+      def create(date)
+        return business_year(date).to_s + '年度' + @base_name
+      end
+
+      private
+
+      def business_year(date)
+        return (1 <= date.month  && date.month  <= 3) ? date.year - 1 : date.year
+      end
+    end
+
+    class YearAndCountup < Year
+      def initialize(base_name)
+        @n_th = 1
+        super(base_name)
+      end
+
+      def create(date)
+        year = business_year(date)
+        if @prev_date
+          d = Date.parse(year.to_s + '-04-01')
+          @n_th = 1 if @prev_date < d && d <= date
+        end
+
+        s = year.to_s + '年度第' + @n_th.to_s + '回' + @base_name
+        @prev_date = date
+        @n_th += 1
+        return s
+      end
+    end
+
+    class Ambiguous
+      # Not implement
+    end
+  end
+
   class ParamBuilder
     def self.create(name, opt)
       case name
@@ -175,6 +249,18 @@ module DummyCalendar
       when :order         then return DummyCalendar::Param::Order.new(opt[:date], opt[:direction])
       when :simultaneous  then return DummyCalendar::Param::Order.new(opt[:date], :simultaneous)
       when :deadline      then return DummyCalendar::Param::Order.new(opt[:date], :before)
+      end
+    end
+  end
+
+  class SummaryRuleBuilder
+    def self.create(base_name, rule)
+      case rule
+      when :no_makeup        then return DummyCalendar::SummaryRule::NoMakeup.new(base_name)
+      when :countup          then return DummyCalendar::SummaryRule::Countup.new(base_name)
+      when :year             then return DummyCalendar::SummaryRule::Year.new(base_name)
+      when :year_and_countup then return DummyCalendar::SummaryRule::YearAndCountup.new(base_name)
+      when :ambiguous        then return DummyCalendar::SummaryRule::Ambiguous.new(base_name)
       end
     end
   end
@@ -194,6 +280,10 @@ module DummyCalendar
                   :weight => weight}
     end
 
+    def set_summary_rule(base_name, rule)
+      @summary_rule = DummyCalendar::SummaryRuleBuilder.create(base_name, rule)
+    end
+
     def generate(dstart, range)
       unless @interval
         puts 'Error: Interval parameter is required. You must call set_interval()'
@@ -207,7 +297,8 @@ module DummyCalendar
       dates = ((range.first)..(range.last + 30)).step(1).to_a
 
       next_dstart = dstart
-      result = [next_dstart]
+      result = [{:dstart => next_dstart,
+                 :summary => @summary_rule.create(next_dstart)}]
 
       # Evaluate all params without interval param
       vals_params = evaluation_values(dates, dstart)
@@ -223,7 +314,9 @@ module DummyCalendar
         break if next_dstart >= dstart + next_dstart_index
         next_dstart = range.first + next_dstart_index
         break if next_dstart > range.last
-        result << next_dstart
+
+        result << {:dstart => next_dstart,
+                   :summary => @summary_rule.create(next_dstart)}
 
         vals_params = Array.new(next_dstart_index + 1, -999) + vals_params[(next_dstart_index+1)..-1]
       end

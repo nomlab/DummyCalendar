@@ -66,10 +66,11 @@ rescue
   exit -1
 end
 
-unless dates = generate(ARGV[0], dstart, dend)
+unless result = generate(ARGV[0], dstart, dend)
   puts "ERROR: Recurrence name `" + ARGV[0] + "` not found"
   puts "Please select name in /patterns/*"
   exit -1
 end
 
-print_events('dummy_' + ARGV[0], dates)
+puts result
+# print_events('dummy_' + ARGV[0], dates)
