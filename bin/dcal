@@ -1,0 +1,102 @@
+#!/usr/bin/env ruby
+
+################################################################
+# rbenv support:
+# If this file is a symlink, and bound to a specific ruby
+# version via rbenv (indicated by RBENV_VERSION),
+# I want to resolve the symlink and re-exec
+# the original executable respecting the .ruby_version
+# which should indicate the right version.
+#
+if File.symlink?(__FILE__) and ENV["RBENV_VERSION"]
+  ENV["RBENV_VERSION"] = nil
+  shims_path = File.expand_path("shims", ENV["RBENV_ROOT"])
+  ENV["PATH"] = shims_path + ":" + ENV["PATH"]
+  exec(File.readlink(__FILE__), *ARGV)
+end
+
+gemfile = File.expand_path("../../Gemfile", __FILE__)
+
+if File.exists?(gemfile + ".lock")
+  ENV["BUNDLE_GEMFILE"] = gemfile
+  require "bundler/setup"
+end
+
+require "rubygems"
+require "thor"
+require File.expand_path("../../lib/dummy_calendar", __FILE__)
+
+DB_PATH = File.expand_path("../../patterns", __FILE__)
+
+class DummyCalendarCLI < Thor
+  package_name 'DummyCalendar'
+  default_command :help
+
+  ################################################################
+  # command name mappings
+  map ["--help", "-h"] => :help
+  map ["--generate", "-g"] => :generate
+
+
+  ################################################################
+  # Command: help
+  ################################################################
+  desc "help [COMMAND]", "Describe available commands or one specific command"
+  def help(command = nil)
+    super(command)
+  end
+
+  ################################################################
+  # Command: generate
+  ################################################################
+  desc "generate PATTERN_NAME DSTART DEND", "Generate dummy events."
+
+  method_option :format, :default => 'csv'
+
+  def generate(name, dstart, dend)
+    begin
+      dstart = Date.parse(dstart)
+      dend   = Date.parse(dend)
+      raise if dstart >= dend
+    rescue
+      puts "ERROR: Invalid date"
+      exit -1
+    end
+
+    cal = DummyCalendar::Calendar.new
+
+    # filenames = Dir.glob("#{DB_PATH}/*").map{|path| path.split('/').last}
+    # filenames.each do |filename|
+    unless events = generate_dummy_events(name, dstart, dend)
+      puts "ERROR: Recurrence name `" + name + "` not found"
+      puts "Please select name in /patterns/*"
+      exit -1
+    end
+    cal.add_events(events)
+
+    case options[:format]
+    when 'csv' then cal.print_events
+    when 'ics' then puts cal.to_ics
+    end
+  end
+
+  private
+
+  def generate_dummy_events(name, dstart, dend)
+    dc = DummyCalendar::EventGenerator.new
+    range = dstart..dend
+    start_year = dstart.year
+    end_year = dend.year
+
+    filenames = Dir.glob("#{DB_PATH}/*").map{|path| path.split('/').last}
+    if filenames.include?(name)
+      eval File.read "#{DB_PATH}/#{name}"
+    else
+      return nil
+    end
+
+    return dc.generate(dstart, range)
+  end
+end
+
+command = DummyCalendarCLI.start(ARGV)
