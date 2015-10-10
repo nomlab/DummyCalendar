@@ -26,11 +26,11 @@ require "rubygems"
 require "thor"
 require File.expand_path("../../lib/dummy_calendar", __FILE__)
 
-DB_PATH = File.expand_path("../../patterns", __FILE__)
-
 class DummyCalendarCLI < Thor
   package_name 'DummyCalendar'
   default_command :help
+
+  DB_PATH = File.expand_path("../../patterns", __FILE__)
 
   ################################################################
   # command name mappings
@@ -51,7 +51,7 @@ class DummyCalendarCLI < Thor
   ################################################################
   desc "list", "Show pattern names list."
   def list
-    filenames = Dir.glob("#{DB_PATH}/*").map{|path| path.split('/').last}
+    filenames = pattern_names
     filenames.each do |filename|
       puts filename
     end
@@ -60,11 +60,14 @@ class DummyCalendarCLI < Thor
   ################################################################
   # Command: generate
   ################################################################
-  desc "generate PATTERN_NAME DSTART DEND", "Generate dummy events."
+  desc "generate", "Generate dummy events."
 
-  method_option :format, :default => 'csv'
+  method_option :name, :required => true, :desc => 'pattern name or `all`'
+  method_option :range, :required => true, :banner => 'FROM-TO', :desc => 'YYYYMMDD-YYYYMMDD'
+  method_option :format, :default => 'csv', :desc => '`csv` or `ics`'
 
-  def generate(name, dstart, dend)
+  def generate
+    dstart, dend = options[:range].split('-')
     begin
       dstart = Date.parse(dstart)
       dend   = Date.parse(dend)
@@ -76,14 +79,20 @@ class DummyCalendarCLI < Thor
 
     cal = DummyCalendar::Calendar.new
 
-    # filenames = Dir.glob("#{DB_PATH}/*").map{|path| path.split('/').last}
-    # filenames.each do |filename|
-    unless events = generate_dummy_events(name, dstart, dend)
-      puts "ERROR: Recurrence name `" + name + "` not found"
-      puts "Please select name in /patterns/*"
-      exit -1
+    if options[:name] == 'all'
+      patterns = pattern_names
+      patterns.each do |pattern|
+        events = generate_dummy_events(pattern, dstart, dend)
+        cal.add_events(events)
+      end
+    else
+      unless events = generate_dummy_events(options[:name], dstart, dend)
+        puts "ERROR: Recurrence options[:name] `" + options[:name] + "` not found"
+        puts "Please select options[:name] in /patterns/*"
+        exit -1
+      end
+      cal.add_events(events)
     end
-    cal.add_events(events)
 
     case options[:format]
     when 'csv' then cal.print_events
@@ -107,6 +116,10 @@ class DummyCalendarCLI < Thor
     end
 
     return dc.generate(dstart, range)
+  end
+
+  def pattern_names
+    filenames = Dir.glob("#{DB_PATH}/*").map{|path| path.split('/').last}
   end
 end
 
