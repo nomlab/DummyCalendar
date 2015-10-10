@@ -41,9 +41,20 @@ class DummyCalendarCLI < Thor
   ################################################################
   # Command: help
   ################################################################
-  desc "help [COMMAND]", "Describe available commands or one specific command"
+  desc "help [COMMAND]", "Describe available commands or one specific command."
   def help(command = nil)
     super(command)
+  end
+
+  ################################################################
+  # Command: list
+  ################################################################
+  desc "list", "Show pattern names list."
+  def list
+    filenames = Dir.glob("#{DB_PATH}/*").map{|path| path.split('/').last}
+    filenames.each do |filename|
+      puts filename
+    end
   end
 
   ################################################################
