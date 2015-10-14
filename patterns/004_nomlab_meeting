@@ -1,12 +1,11 @@
-dstart = Date.parse("#{start_year}-04-09")
+dstart = Date.parse("#{start_year}-04-23")
 
-dc.set_summary_rule('GN検討打合せ', :countup)
-dc.set_interval({:n => 14, :range => -5..5}, 1)
+dc.set_summary_rule('乃村研ミーティング', :no_makeup)
+dc.set_interval({:n => 30, :range => -7..7}, 1)
 
 dc.add_param(:holiday, {:flag => false}, 5)
-dc.add_param(:other_events, {:n => 50, :seed => 99991}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 99994}, 1)
 (start_year..end_year).each do |year|
   dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-08-10"), :dend => Date.parse("#{year}-08-14")}, 5)
   dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-12-25"), :dend => Date.parse("#{year + 1}-01-03")}, 5)
-  dc.add_param(:deadline, {:date => Date.parse("#{year + 1}-02-07")}, 1)
 end

@@ -1,0 +1,10 @@
+dstart = Date.parse("#{start_year}-08-07")
+
+dc.set_summary_rule('オープンキャンパス(1日のみ)', :no_makeup)
+dc.set_interval({:n => 365, :range => -7..7}, 1)
+
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:wday, {:wday => :Fri, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 8, :week => 1, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 8, :week => 2, :flag => true}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 999912}, 1)

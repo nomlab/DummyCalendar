@@ -1,0 +1,19 @@
+dstart = Date.parse("#{start_year}-05-11")
+
+dc.set_summary_rule('乃村杯', :countup)
+dc.set_interval({:n => 120, :range => -30..30}, 1)
+
+# 周期が重要でなく，時期(季節)が重要であるため表現が難しい
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:monthweek, {:month => 4, :week => 4, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 4, :week => 5, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 5, :week => 1, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 5, :week => 2, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 5, :week => 3, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 9, :week => 1, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 9, :week => 2, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 9, :week => 3, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 3, :week => 1, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 3, :week => 2, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 3, :week => 3, :flag => true}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 999927}, 1)

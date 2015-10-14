@@ -1,0 +1,13 @@
+dstart = Date.parse("#{start_year}-08-27")
+
+dc.set_summary_rule('SWLAB研修会', :no_makeup)
+dc.set_interval({:n => 365, :range => -7..7}, 1)
+
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:monthweek, {:month => 8, :week => 4, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 8, :week => 5, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 9, :week => 1, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 9, :week => 2, :flag => true}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 999917}, 1)
+dc.add_param(:order, {:date => Date.parse("#{start_year}-08-20"), :direction => :after}, 5)  # 院試試験日
+dc.add_param(:order, {:date => Date.parse("#{start_year}-09-04"), :direction => :before}, 5) # 院試合格発表

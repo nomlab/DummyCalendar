@@ -1,0 +1,12 @@
+dstart = Date.parse("#{start_year+1}-03-25")
+
+dc.set_summary_rule('卒業式', :no_makeup)
+dc.set_interval({:n => 365, :range => -15..15}, 1)
+
+# 卒業式は，常に3/25が候補日．ただし3/25が土日な場合，直前の金曜日に行う
+# 上記のような明確な規則があるが，複雑なためこのモデルでは表現できない
+# そこで，上記を簡易的に表現するために，各候補条件のweightを工夫した
+dc.add_param(:holiday, {:flag => false}, 3)
+dc.add_param(:date, {:month => 3, :day => 25, :flag => true}, 2)
+dc.add_param(:wday, {:wday => :Fri, :flag => true}, 1)
+dc.add_param(:order, {:date => Date.parse("#{start_year+1}-03-25"), :direction => :before}, 1)

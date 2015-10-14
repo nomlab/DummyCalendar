@@ -1,0 +1,11 @@
+dstart = Date.parse("#{start_year}-09-28")
+
+dc.set_summary_rule('円卓会議', :year_and_countup)
+dc.set_interval({:n => 183, :range => -15..15}, 1)
+
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:month, {:month => 2, :flag => true}, 1)
+dc.add_param(:month, {:month => 3, :flag => true}, 1)
+dc.add_param(:month, {:month => 9, :flag => true}, 1)
+dc.add_param(:month, {:month => 10, :flag => true}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 99996}, 1)

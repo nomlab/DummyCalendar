@@ -1,0 +1,10 @@
+dstart = Date.parse("#{start_year+1}-03-26")
+
+dc.set_summary_rule('106号室大掃除', :no_makeup)
+dc.set_interval({:n => 365, :range => -15..15}, 1)
+
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:monthweek, {:month => 3, :week => 4, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 3, :week => 5, :flag => true}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 999921}, 1)
+dc.add_param(:order, {:date => Date.parse("#{start_year}-04-01"), :direction => :before}, 5) # 新B4配属

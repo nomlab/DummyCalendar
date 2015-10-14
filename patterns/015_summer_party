@@ -1,0 +1,9 @@
+dstart = Date.parse("#{start_year}-07-06")
+
+dc.set_summary_rule('暑気払い', :no_makeup)
+dc.set_interval({:n => 365, :range => -7..7}, 1)
+
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:monthweek, {:month => 7, :week => 1, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 7, :week => 2, :flag => true}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 999916}, 1)

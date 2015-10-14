@@ -1,0 +1,7 @@
+dstart = Date.parse("#{start_year}-06-21")
+
+dc.set_summary_rule('3年次編入試験', :no_makeup)
+dc.set_interval({:n => 365, :range => -15..15}, 1)
+
+dc.add_param(:wday, {:wday => :Tue, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 6, :week => 4, :flag => true}, 1)

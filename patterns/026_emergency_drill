@@ -1,0 +1,7 @@
+dstart = Date.parse("#{start_year}-11-20")
+
+dc.set_summary_rule('防災訓練', :no_makeup)
+dc.set_interval({:n => 365, :range => -15..15}, 1)
+
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:month, {:month => 11, :flag => true}, 1)

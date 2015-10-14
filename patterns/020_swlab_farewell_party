@@ -1,0 +1,14 @@
+dstart = Date.parse("#{start_year+1}-03-02")
+
+dc.set_summary_rule('SWLAB送別会', :no_makeup)
+dc.set_interval({:n => 365, :range => -15..15}, 1)
+
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:monthweek, {:month => 2, :week => 4, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 2, :week => 5, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 3, :week => 1, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 3, :week => 2, :flag => true}, 1)
+dc.add_param(:monthweek, {:month => 3, :week => 3, :flag => true}, 1)
+dc.add_param(:other_events, {:n => 50, :seed => 999920}, 1)
+dc.add_param(:order, {:date => Date.parse("#{start_year+1}-02-12"), :direction => :after}, 5)  # 卒論発表
+dc.add_param(:order, {:date => Date.parse("#{start_year+1}-03-25"), :direction => :before}, 5) # 卒業式
