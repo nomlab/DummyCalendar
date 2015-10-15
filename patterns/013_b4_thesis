@@ -7,4 +7,6 @@ dc.add_param(:holiday, {:flag => false}, 5)
 dc.add_param(:monthweek, {:month => 2, :week => 2, :flag => true}, 1)
 dc.add_param(:monthweek, {:month => 2, :week => 3, :flag => true}, 1)
 dc.add_param(:other_events, {:n => 50, :seed => 999913}, 1)
-dc.add_param(:order, {:date => Date.parse("#{start_year+1}-02-06"), :direction => :after}, 5) # 卒論締切
+(start_year..end_year).each do |year|
+  dc.add_param(:order, {:date => Date.parse("#{year+1}-02-06"), :direction => :after}, 5) # 卒論締切
+end

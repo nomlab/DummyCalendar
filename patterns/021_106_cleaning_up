@@ -7,4 +7,6 @@ dc.add_param(:holiday, {:flag => false}, 5)
 dc.add_param(:monthweek, {:month => 3, :week => 4, :flag => true}, 1)
 dc.add_param(:monthweek, {:month => 3, :week => 5, :flag => true}, 1)
 dc.add_param(:other_events, {:n => 50, :seed => 999921}, 1)
-dc.add_param(:order, {:date => Date.parse("#{start_year}-04-01"), :direction => :before}, 5) # 新B4配属
+(start_year..end_year).each do |year|
+  dc.add_param(:order, {:date => Date.parse("#{year}-04-01"), :direction => :before}, 5) # 新B4配属
+end
