@@ -82,11 +82,11 @@ class DummyCalendarCLI < Thor
     if options[:name] == 'all'
       patterns = pattern_names
       patterns.each do |pattern|
-        events = generate_dummy_events(pattern, dstart, dend)
+        events = generate_dummy_events(pattern, dstart, dend, pattern)
         cal.add_events(events)
       end
     else
-      unless events = generate_dummy_events(options[:name], dstart, dend)
+      unless events = generate_dummy_events(options[:name], dstart, dend, pattern)
         puts "ERROR: Recurrence options[:name] `" + options[:name] + "` not found"
         puts "Please select options[:name] in /patterns/*"
         exit -1
@@ -102,8 +102,8 @@ class DummyCalendarCLI < Thor
 
   private
 
-  def generate_dummy_events(name, dstart, dend)
-    dc = DummyCalendar::EventGenerator.new
+  def generate_dummy_events(name, dstart, dend, recurrence_tag)
+    dc = DummyCalendar::EventGenerator.new(recurrence_tag)
     range = dstart..dend
     start_year = dstart.year
     end_year = dend.year

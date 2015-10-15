@@ -3,16 +3,17 @@ require 'icalendar'
 
 module DummyCalendar
   class Event
-    attr_accessor :summary, :dstart, :dend
+    attr_accessor :summary, :dstart, :dend, :recurrence_tag
 
-    def initialize(summary, dstart, dend)
+    def initialize(summary, dstart, dend, recurrence_tag)
       @summary = summary
       @dstart = dstart
       @dend = dend
+      @recurrence_tag = recurrence_tag
     end
 
     def pretty_print
-      return dstart.strftime("%Y/%m/%d") + ', ' + summary
+      return dstart.strftime("%Y/%m/%d") + ', ' + recurrence_tag + ', ' + summary
     end
 
     def to_ical

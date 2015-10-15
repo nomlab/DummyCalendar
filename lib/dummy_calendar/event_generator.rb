@@ -30,7 +30,8 @@ module DummyCalendar
   end
 
   class EventGenerator
-    def initialize
+    def initialize(recurrence_tag)
+      @recurrence_tag = recurrence_tag
       @params = []
     end
 
@@ -61,7 +62,7 @@ module DummyCalendar
       dates = ((range.first)..(range.last + 366)).step(1).to_a
 
       next_dstart = dstart
-      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart)]
+      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag)]
 
       # Evaluate all params without interval param
       vals_params = evaluation_values(dates, dstart)
@@ -78,7 +79,7 @@ module DummyCalendar
         next_dstart = range.first + next_dstart_index
         break if next_dstart > range.last
 
-        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart)
+        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag)
 
         vals_params = Array.new(next_dstart_index + 1, -999) + vals_params[(next_dstart_index+1)..-1]
       end
