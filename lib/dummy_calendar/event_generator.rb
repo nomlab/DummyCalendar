@@ -58,7 +58,7 @@ module DummyCalendar
       # When selecting next_dstart around last of range,
       # not being able to select date after range.
       # Thus, next_dstart is forcibly selected within range.
-      dates = ((range.first)..(range.last + 30)).step(1).to_a
+      dates = ((range.first)..(range.last + 366)).step(1).to_a
 
       next_dstart = dstart
       result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart)]
