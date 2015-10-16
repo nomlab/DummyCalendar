@@ -1,0 +1,12 @@
+dstart = Date.parse("#{start_year}-04-14")
+
+dc.set_summary_rule('ソフトウェア開発法', :no_makeup)
+dc.set_interval({:n => 7, :range => -3..3}, 1)
+
+# FIXME: 評価値低くても選びに行く設計なため，半期休みが表現できていない
+dc.add_param(:holiday, {:flag => false}, 5)
+dc.add_param(:wday, {:wday => :Tue, :flag => true}, 1)
+(start_year..end_year).each do |year|
+  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-01-01"), :dend => Date.parse("#{year + 1}-04-07")}, 5)
+  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-08-07"), :dend => Date.parse("#{year + 1}-03-31")}, 5)
+end
