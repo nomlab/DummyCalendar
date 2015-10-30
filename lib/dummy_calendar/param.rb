@@ -135,15 +135,19 @@ module DummyCalendar
     end
 
     class Order
-      def initialize(date, direction)
-        @date = date; @direction = direction
+      # Example: Order.new(Date.parse('2000-1-7', :before, 2))
+      #---------------------------------------------------------------
+      #              Date: ..., 2000-1-4, 1-5, 1-6, 1-7, 1-8, 1-9, ...
+      # evaluation_values: ...,        0,   1,   1,   0,   0,   0, ...
+      def initialize(date, direction, term_length = 365)
+        @date = date; @direction = direction; @term_length = term_length
       end
 
       def evaluation_values(dates)
         case @direction
-        when :before        then return dates.map{|date| date < @date ? 1 : 0}
+        when :before        then return dates.map{|date| (@date - @term_length <= date && date < @date) ? 1 : 0}
         when :simultaneous  then return dates.map{|date| date == @date ? 1 : 0}
-        when :after         then return dates.map{|date| date > @date ? 1 : 0}
+        when :after         then return dates.map{|date| (@date + @term_length >= date && date > @date) ? 1 : 0}
         end
       end
     end
