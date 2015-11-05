@@ -86,12 +86,14 @@ class DummyCalendarCLI < Thor
         cal.add_events(events)
       end
     else
-      unless events = generate_dummy_events(options[:name], dstart, dend, options[:name])
-        puts "ERROR: Recurrence options[:name] `" + options[:name] + "` not found"
-        puts "Please select options[:name] in /patterns/*"
-        exit -1
+      options[:name].split(',').each do |name|
+        unless events = generate_dummy_events(name, dstart, dend, name)
+          puts "ERROR: Recurrence options[:name] `" + name + "` not found"
+          puts "Please select options[:name] in /patterns/*"
+          exit -1
+        end
+        cal.add_events(events)
       end
-      cal.add_events(events)
     end
 
     case options[:format]
