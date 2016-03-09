@@ -1,2 +1,17 @@
 * 設計
 GN検討打合せ資料の<No.183-04>に基づく
+
+recurrence_name は patterns/ 以下のファイル名
+これらのファイルは自作できる．
+中身見たらなんとなくわかると思う.
+自作したやつをそこに置いとけばその名前で使える
+
+例: gn_meetingのダミーデータ生成
+```
+$ ./bin/dcal generate --range=20140401-20160330 --name=gn_meeting --format=ics
+```
+
+nameには，すべてのリカーレンスを出力するallという識別子を特別に用意している
+```
+$ ./bin/dcal generate --range=20140401-20160330 --name=all --format=ics > dummy.ics
+```
