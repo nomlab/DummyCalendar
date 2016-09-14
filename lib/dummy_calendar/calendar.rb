@@ -26,6 +26,7 @@ module DummyCalendar
           e.dtend       = Icalendar::Values::Date.new(dummy_event.dend)
           e.summary     = dummy_event.summary
           e.description = ''
+          e.append_custom_property("X-TIMING","#{dummy_event.timing}")
         end
       end
       return cal.to_ical

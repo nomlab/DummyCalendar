@@ -2,6 +2,7 @@ dstart = Date.parse("#{start_year}-11-20")
 
 dc.set_summary_rule('M1論文紹介', :no_makeup)
 dc.set_interval({:n => 365, :range => -15..15}, 1)
+dc.set_timing('bulk')
 
 dc.add_param(:holiday, {:flag => false}, 5)
 dc.add_param(:monthweek, {:month => 10, :week => 4, :flag => true}, 1)

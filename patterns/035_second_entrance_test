@@ -2,5 +2,6 @@ dstart = Date.parse("#{start_year+1}-03-12")
 
 dc.set_summary_rule('大学後期入試', :no_makeup)
 dc.set_interval({:n => 365, :range => -7..7}, 1)
+dc.set_timing('bulk')
 
 dc.add_param(:date, {:month => 3, :day => 12, :flag => true}, 1)

@@ -49,6 +49,10 @@ module DummyCalendar
       @summary_rule = DummyCalendar::SummaryRuleBuilder.create(base_name, rule)
     end
 
+    def set_timing(val)
+      @timing = val
+    end
+
     def generate(dstart, range)
       unless @interval
         puts 'Error: Interval parameter is required. You must call set_interval()'
@@ -62,12 +66,12 @@ module DummyCalendar
       dates = ((range.first)..(range.last + 366)).step(1).to_a
 
       next_dstart = dstart
-      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag)]
+      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing)]
 
       # Evaluate all params without interval param
       vals_params = evaluation_values(dates, dstart)
 
-      while 1
+  while 1
         vals_interval = @interval[:param].evaluation_values(dates, next_dstart)
         vals_total = vals_params.zip(vals_interval).map{|f,s| f + s * @interval[:weight]}
 
@@ -79,7 +83,7 @@ module DummyCalendar
         next_dstart = range.first + next_dstart_index
         break if next_dstart > range.last
 
-        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag)
+        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing)
 
         vals_params = Array.new(next_dstart_index + 1, -999) + vals_params[(next_dstart_index+1)..-1]
       end

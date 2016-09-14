@@ -1,7 +1,8 @@
 dstart = Date.parse("#{start_year}-05-11")
 
-dc.set_summary_rule('乃村杯', :countup)
+dc.set_summary_rule('乃村杯', :no_makeup)
 dc.set_interval({:n => 120, :range => -30..30}, 1)
+dc.set_timing('bulk')
 
 # 周期が重要でなく，時期(季節)が重要であるため表現が難しい
 dc.add_param(:holiday, {:flag => false}, 5)

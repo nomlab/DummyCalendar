@@ -1,7 +1,8 @@
 dstart = Date.parse("#{start_year}-05-15")
 
-dc.set_summary_rule('SWLAB部屋別対抗ボウリング大会', :year_and_countup)
+dc.set_summary_rule('SWLAB部屋別対抗ボウリング大会', :no_makeup)
 dc.set_interval({:n => 120, :range => -30..30}, 1)
+dc.set_timing('bulk')
 
 dc.add_param(:holiday, {:flag => false}, 5)
 dc.add_param(:month, {:month => 5, :flag => true}, 1)

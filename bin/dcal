@@ -77,13 +77,41 @@ class DummyCalendarCLI < Thor
       exit -1
     end
 
-    cal = DummyCalendar::Calendar.new
+    @cal = DummyCalendar::Calendar.new
+    event_next = {}
 
     if options[:name] == 'all'
       patterns = pattern_names
       patterns.each do |pattern|
         events = generate_dummy_events(pattern, dstart, dend, pattern)
-        cal.add_events(events)
+        @cal.add_events(events)
+      end
+    elsif options[:name] == 'dbyd'
+      patterns = pattern_names
+      patterns.each do |pattern|
+        events = generate_dummy_events(pattern, dstart, dend, pattern)
+        if events[0].timing == 'successively'
+          @cal.add_event(events[0])
+          @cal.add_event(events[1])
+          event_next[pattern] = events[1].dstart.to_date
+        else
+          @cal.add_events(events)
+        end
+      end
+      now = dstart
+      while dend - now != 0
+        event_next.each do |key,val|
+          if now - val == 0
+            events = generate_dummy_events_dbyd(key, now, dend, key)
+            if events[1].nil?
+              event_next[key] = dend + 1
+            else
+              @cal.add_event(events[1])
+              event_next[key] = events[1].dstart.to_date
+            end
+          end
+        end
+        now += 1
       end
     else
       options[:name].split(',').each do |name|
@@ -92,13 +120,13 @@ class DummyCalendarCLI < Thor
           puts "Please select options[:name] in /patterns/*"
           exit -1
         end
-        cal.add_events(events)
+        @cal.add_events(events)
       end
     end
 
     case options[:format]
-    when 'csv' then cal.print_events
-    when 'ics' then puts cal.to_ics
+    when 'csv' then @cal.print_events
+    when 'ics' then puts @cal.to_ics
     end
   end
 
@@ -118,6 +146,22 @@ class DummyCalendarCLI < Thor
     end
 
     return dc.generate(dstart, range)
+  end
+
+  def generate_dummy_events_dbyd(name, dstart_next, dend, recurrence_tag)
+    dc = DummyCalendar::EventGenerator.new(recurrence_tag)
+    range = dstart_next..dend
+    start_year = dstart_next.year
+    end_year = dend.year
+
+    filenames = Dir.glob("#{DB_PATH}/*").map{|path| path.split('/').last}
+    if filenames.include?(name)
+      eval File.read "#{DB_PATH}/#{name}"
+    else
+      return nil
+    end
+
+    return dc.generate(dstart_next, range)
   end
 
   def pattern_names

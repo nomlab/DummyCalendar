@@ -2,6 +2,7 @@ dstart = Date.parse("#{start_year}-04-23")
 
 dc.set_summary_rule('乃村研ミーティング', :no_makeup)
 dc.set_interval({:n => 30, :range => -7..7}, 1)
+dc.set_timing('successively')
 
 dc.add_param(:holiday, {:flag => false}, 5)
 dc.add_param(:other_events, {:n => 50, :seed => 99994}, 1)

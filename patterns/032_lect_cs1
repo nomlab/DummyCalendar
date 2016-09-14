@@ -2,6 +2,7 @@ dstart = Date.parse("#{start_year}-10-01")
 
 dc.set_summary_rule('システムプログラミング', :no_makeup)
 dc.set_interval({:n => 7, :range => -3..3}, 1)
+dc.set_timing('bulk')
 
 # FIXME: 評価値低くても選びに行く設計なため，半期休みが表現できていない
 dc.add_param(:holiday, {:flag => false}, 5)

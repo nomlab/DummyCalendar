@@ -3,13 +3,14 @@ require 'icalendar'
 
 module DummyCalendar
   class Event
-    attr_accessor :summary, :dstart, :dend, :recurrence_tag
+    attr_accessor :summary, :dstart, :dend, :recurrence_tag, :timing
 
-    def initialize(summary, dstart, dend, recurrence_tag)
+    def initialize(summary, dstart, dend, recurrence_tag, timing)
       @summary = summary
       @dstart = dstart
       @dend = dend
       @recurrence_tag = recurrence_tag
+      @timing = timing
     end
 
     def pretty_print
@@ -24,6 +25,7 @@ module DummyCalendar
         e.summary     = summary
         e.description = ''
       end
+      cal.append_custom_property("X-TIMING","#{@timing}")
       return cal.to_ical
     end
   end
