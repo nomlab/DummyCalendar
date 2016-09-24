@@ -1,0 +1,62 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
+gemfile = File.expand_path("../../Gemfile", __FILE__)
+
+if File.exists?(gemfile + ".lock")
+  ENV["BUNDLE_GEMFILE"] = gemfile
+  require "bundler/setup"
+end
+
+require "rubygems"
+require 'yaml'
+require 'date'
+require 'icalendar'
+
+def generate(dstart, dend, events_par_month)
+  day = 0
+  calendar = Icalendar::Calendar.new
+  while dend > (dstart + day) do
+    create_day = dstart + day
+    if really_event_generate?(events_par_month)
+      event = event_generate(create_day)
+      calendar.add_event(event)
+    end
+    day += 1
+  end
+  return calendar
+end
+
+def event_generate(create_day)
+  event = Icalendar::Event.new
+  event.summary = "単発の予定"
+  event.dtstart, event.dtend = create_day, create_day
+  return event
+end
+
+# probability generating an event by a day is (events_par_month / 31)
+def really_event_generate?(events_par_month)
+  return true if (@random.rand(1..31) < events_par_month)
+  return false
+end
+
+config = File.expand_path("../../config.yml", __FILE__)
+conf = YAML.load_file(config)
+events_par_month = conf["NON-RECCRENCE-RATE"]
+dstart, dend = conf["RANGE"].split('-')
+begin
+  dstart = Date.parse(dstart)
+  dend   = Date.parse(dend)
+  raise if dstart >= dend
+rescue
+  puts "ERROR: Invalid date"
+  exit -1
+end
+
+seed = 0
+@random = Random.new(seed)
+non_rec_cal = generate(dstart, dend, events_par_month)
+path = File.expand_path("../../generated/non_rec.ics", __FILE__)
+f = File.open(path, 'w')
+f.write(non_rec_cal.to_ical)
+f.close

@@ -53,7 +53,11 @@ module DummyCalendar
       @timing = val
     end
 
-    def generate(dstart, range)
+    def set_during(val)
+      @during = val
+    end
+
+    def generate(dstart, range, max_time)
       unless @interval
         puts 'Error: Interval parameter is required. You must call set_interval()'
         exit -1
@@ -66,24 +70,33 @@ module DummyCalendar
       dates = ((range.first)..(range.last + 366)).step(1).to_a
 
       next_dstart = dstart
-      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing)]
+      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing, @during)]
 
       # Evaluate all params without interval param
       vals_params = evaluation_values(dates, dstart)
 
-  while 1
+      while 1
         vals_interval = @interval[:param].evaluation_values(dates, next_dstart)
         vals_total = vals_params.zip(vals_interval).map{|f,s| f + s * @interval[:weight]}
 
         index_of_pivot = (next_dstart + @interval[:param].n - range.first).to_i
-        indexes_of_candidate = indexes_of_max(vals_total)
-        next_dstart_index = closest(indexes_of_candidate, index_of_pivot)
+        while 1
+          indexes_of_candidate = indexes_of_max(vals_total)
+          next_dstart_index = closest(indexes_of_candidate, index_of_pivot)
+          break unless $used_time[range.first + next_dstart_index]
+          if $used_time[range.first + next_dstart_index] + @during > max_time
+            vals_total[next_dstart_index] -= 100
+          else
+            break
+          end
+        end
 
         break if next_dstart >= dstart + next_dstart_index
         next_dstart = range.first + next_dstart_index
         break if next_dstart > range.last
 
-        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing)
+        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing, @during)
+        break if @timing == 'successively'
 
         vals_params = Array.new(next_dstart_index + 1, -999) + vals_params[(next_dstart_index+1)..-1]
       end

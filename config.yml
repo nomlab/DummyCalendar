@@ -1,0 +1,74 @@
+---
+RANGE: "20150401-20160331"
+NO-RECURRENCE-RATE: 2
+MAX-TIME: 360
+NON-RECCRENCE-RATE: 2
+RECCRENCE:
+  MEETING-2W: 2
+  MEETING-1M: 3
+  FAREWELL-PARTY: 2
+  WELCOME-PARTY: 1
+  YEAR-END-PARTY: 1
+  EVENT-HY:
+    - 3
+    - 9
+  EVENT-1Y:
+    - 0
+    - 2
+    - 1
+    - 0
+    - 0
+    - 1
+    - 1
+    - 2
+    - 0
+    - 0
+    - 5
+    - 2
+  RECREATION:
+    -
+      - 3
+      - 5
+      - 9
+  LECTURE:
+    PREVIOUS:
+      - 0
+      - 1
+      - 1
+      - 0
+      - 1
+    LATTER:
+      - 0
+      - 0
+      - 0
+      - 1
+      - 1
+  OTHER:
+    -
+      INTARVAL: 365
+      NAME: 推薦入試
+      MONTH: 12
+      WEEK: 1
+      WDAY: Sat
+    -
+      INTARVAL: 365
+      NAME: 編入試験
+      MONTH: 6
+      WEEK: 4
+      WDAY: Tue
+    -
+      INTARVAL: 365
+      NAME: 卒業式
+      DATE: 03-25
+    -
+      INTARVAL: 365
+      NAME: 前期入試
+      DATE: 02-25
+    -
+      INTARVAL: 365
+      NAME: 後期入試
+      DATE: 03-12
+    -
+      INTARVAL: 365
+       NAME: 入学式
+      DATE: 04-08

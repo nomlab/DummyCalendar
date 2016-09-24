@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 
 ################################################################
 # rbenv support:
@@ -30,7 +31,7 @@ class DummyCalendarCLI < Thor
   package_name 'DummyCalendar'
   default_command :help
 
-  DB_PATH = File.expand_path("../../patterns", __FILE__)
+  DB_PATH = File.expand_path("../../generated/patterns", __FILE__)
 
   ################################################################
   # command name mappings
@@ -65,6 +66,7 @@ class DummyCalendarCLI < Thor
   method_option :name, :required => true, :desc => 'pattern name or `all`'
   method_option :range, :required => true, :banner => 'FROM-TO', :desc => 'YYYYMMDD-YYYYMMDD'
   method_option :format, :default => 'csv', :desc => '`csv` or `ics`'
+  method_option :max_time, :default => 360
 
   def generate
     dstart, dend = options[:range].split('-')
@@ -79,34 +81,39 @@ class DummyCalendarCLI < Thor
 
     @cal = DummyCalendar::Calendar.new
     event_next = {}
+    max_time = options[:max_time].to_i
+    orig_range = dstart..dend
+    dstart -= 365
 
     if options[:name] == 'all'
       patterns = pattern_names
       patterns.each do |pattern|
-        events = generate_dummy_events(pattern, dstart, dend, pattern)
-        @cal.add_events(events)
+        events = generate_dummy_events(pattern, dstart, dend, pattern, max_time)
+        @cal.add_events(events, orig_range)
       end
     elsif options[:name] == 'dbyd'
+      $used_time = {}
+      @cal.add_non_reccrence(max_time, orig_range)
       patterns = pattern_names
       patterns.each do |pattern|
-        events = generate_dummy_events(pattern, dstart, dend, pattern)
+        events = generate_dummy_events(pattern, dstart, dend, pattern, max_time)
         if events[0].timing == 'successively'
-          @cal.add_event(events[0])
-          @cal.add_event(events[1])
+          @cal.add_event(events[0], orig_range)
+          @cal.add_event(events[1], orig_range)
           event_next[pattern] = events[1].dstart.to_date
         else
-          @cal.add_events(events)
+          @cal.add_events(events, orig_range)
         end
       end
       now = dstart
       while dend - now != 0
         event_next.each do |key,val|
           if now - val == 0
-            events = generate_dummy_events_dbyd(key, now, dend, key)
+            events = generate_dummy_events_dbyd(key, now, dend, key, max_time)
             if events[1].nil?
               event_next[key] = dend + 1
             else
-              @cal.add_event(events[1])
+              @cal.add_event(events[1], orig_range)
               event_next[key] = events[1].dstart.to_date
             end
           end
@@ -132,7 +139,7 @@ class DummyCalendarCLI < Thor
 
   private
 
-  def generate_dummy_events(name, dstart, dend, recurrence_tag)
+  def generate_dummy_events(name, dstart, dend, recurrence_tag, max_time)
     dc = DummyCalendar::EventGenerator.new(recurrence_tag)
     range = dstart..dend
     start_year = dstart.year
@@ -145,10 +152,11 @@ class DummyCalendarCLI < Thor
       return nil
     end
 
-    return dc.generate(dstart, range)
+    return dc.generate(dstart, range, max_time)
   end
 
-  def generate_dummy_events_dbyd(name, dstart_next, dend, recurrence_tag)
+  # eval File.readでdstart_nextを書き換えてしまうため，別名をつけたメソッドを用意した
+  def generate_dummy_events_dbyd(name, dstart_next, dend, recurrence_tag, max_time)
     dc = DummyCalendar::EventGenerator.new(recurrence_tag)
     range = dstart_next..dend
     start_year = dstart_next.year
@@ -161,7 +169,7 @@ class DummyCalendarCLI < Thor
       return nil
     end
 
-    return dc.generate(dstart_next, range)
+    return dc.generate(dstart_next, range, max_time)
   end
 
   def pattern_names

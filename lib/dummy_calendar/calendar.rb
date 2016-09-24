@@ -8,13 +8,18 @@ module DummyCalendar
       @events = []
     end
 
-    def add_event(event)
-      @events << event
+    def add_event(event, range)
+      if $used_time[event.dstart]
+        $used_time[event.dstart] += event.during
+      else
+        $used_time[event.dstart] = event.during
+      end
+      @events << event if event.dstart.between?(range.first, range.last)
     end
 
-    def add_events(events)
+    def add_events(events, range)
       events.each do |e|
-        add_event(e)
+        add_event(e, range)
       end
     end
 
@@ -36,6 +41,18 @@ module DummyCalendar
       events.each do |e|
         puts e.pretty_print
       end
+    end
+
+    def add_non_reccrence(max_time, range)
+      path = File.expand_path("../../../generated/non_rec.ics", __FILE__)
+      f = File.open(path)
+      event = Icalendar.parse(f, true)
+      devents = []
+      event.events.each do |e|
+        devent = DummyCalendar::Event.new(e.summary, e.dtstart, e.dtstart, 'no_reccring_event', 'bulk', max_time)
+        devents << devent
+      end
+      add_events(devents, range)
     end
   end
 end

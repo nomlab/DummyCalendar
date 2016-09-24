@@ -38,3 +38,8 @@ bower.json
 
 # Ignore schema
 db/schema.rb
+
+generated/*
+!generated/patterns/
+generated/patterns/*
+!.gitkeep
