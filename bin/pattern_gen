@@ -13,314 +13,188 @@ require 'yaml'
 require 'date'
 require 'icalendar'
 
-def generate(dstart, dend, reccrence)
-  @pattern_num = 1
-  @path = File.expand_path("../../generated/patterns", __FILE__)
+def generate(dstart, recurrence)
+  content = ""
+  content << set_start_date(recurrence, dstart)
+  content << set_summary(recurrence["SUMMARY"]) if recurrence["SUMMARY"]
+  content << set_interval(recurrence["INTERVAL"]) if recurrence["INTERVAL"]
+  content << set_during(recurrence["DURING"]) if recurrence["DURING"]
+  content << set_timing(recurrence["TIMING"]) if recurrence["TIMING"]
+  content << set_wday(recurrence["WDAY"]) if recurrence["WDAY"]
+  content << set_holiday(recurrence["HOLIDAY"]) if recurrence["HOLIDAY"] != nil
+  content << set_monthweek(recurrence["MONTHWEEK"]) if recurrence["MONTHWEEK"]
+  content << set_month(recurrence["MONTH"]) if recurrence["MONTH"]
+  content << set_date(recurrence["DATE"]) if recurrence["DATE"]
+  content << set_vacation_term(recurrence["VACATION_TERM"], dstart) if recurrence["VACATION_TERM"]
+  content << set_other_events(recurrence["OTHER_EVENTS"]) if recurrence["OTHER_EVENTS"] != nil
+  content << set_order(recurrence["ORDER"]) if recurrence["ORDER"]
+  content << set_deadline(recurrence["DEADLINE"]) if recurrence["DEADLINE"]
 
-  generate_meeting_2w(dstart, reccrence) if reccrence["MEETING-2W"]
-  generate_meeting_1m(dstart, reccrence) if reccrence["MEETING-1M"]
-  generate_farewell_party(dstart, reccrence) if reccrence["FAREWELL-PARTY"]
-  generate_welcome_party(dstart, reccrence) if reccrence["WELCOME-PARTY"]
-  generate_year_end_party(dstart, reccrence) if reccrence["YEAR-END-PARTY"]
-  generate_event_hy(dstart, reccrence) if reccrence["EVENT-HY"]
-  generate_event_1y(dstart, reccrence) if reccrence["EVENT-1Y"]
-  generate_recreation(dstart, reccrence) if reccrence["RECREATION"]
-  generate_lecture(dstart, reccrence) if reccrence["LECTURE"]
-  generate_other(dstart, reccrence) if reccrence["OTHER"]
-end
-
-def generate_meeting_2w(dstart, reccrence)
-  n = reccrence["MEETING-2W"]
-    while n != 0
-      content = ""
-      start_day = dstart + @random.rand(0..13)
-      content << 'dstart = Date.parse("#{start_year}-' + "#{start_day.strftime('%m-%d')}" + '")'+"\n"
-      content << "dc.set_summary_rule('打合せ#{reccrence['MEETING-2W'] - n + 1}', :no_makeup)\n"
-      content << "dc.set_interval({:n => 14, :range => -5..5}, 1)\n"
-      content << "dc.set_timing('successively')\n"
-      content << "dc.set_during(120)\n"
-      content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-      content << "dc.add_param(:other_events, {:n => 50, :seed => 9999#{@pattern_num}}, 1)\n"
-      content << "(start_year..end_year).each do |year|\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-08-10"), :dend => Date.parse("#{year}-08-14")}, 5)'+"\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-12-25"), :dend => Date.parse("#{year + 1}-01-03")}, 5)'+"\n"
-      content << '  dc.add_param(:deadline, {:date => Date.parse("#{year + 1}-02-07")}, 1)'+"\n"
-      content << "end\n"
-
-      f = File.open(@path + "/#{format("22_%03d", @pattern_num)}", 'w')
-      f.write(content)
-      f.close
-
-      @pattern_num += 1
-      n -= 1
-    end
-end
-
-def generate_meeting_1m(dstart, reccrence)
-  n = reccrence["MEETING-1M"]
-    while n != 0
-      content = ""
-      start_day = dstart + @random.rand(0..29)
-      content << 'dstart = Date.parse("#{start_year}-' + "#{start_day.strftime('%m-%d')}" + '")'+"\n"
-      content << "dc.set_summary_rule('ミーティング#{reccrence['MEETING-1M'] - n + 1}', :no_makeup)\n"
-      content << "dc.set_interval({:n => 30, :range => -7..7}, 1)\n"
-      content << "dc.set_timing('successively')\n"
-      content << "dc.set_during(120)\n"
-      content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-      content << "dc.add_param(:other_events, {:n => 50, :seed => 9999#{@pattern_num}}, 1)\n"
-      content << "(start_year..end_year).each do |year|\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-08-10"), :dend => Date.parse("#{year}-08-14")}, 5)'+"\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-12-25"), :dend => Date.parse("#{year + 1}-01-03")}, 5)'+"\n"
-      content << "end\n"
-
-      f = File.open(@path + "/#{format("21_%03d", @pattern_num)}", 'w')
-      f.write(content)
-      f.close
-
-      @pattern_num += 1
-      n -= 1
-    end
-end
-
-def generate_farewell_party(dstart, reccrence)
-  n = reccrence["FAREWELL-PARTY"]
-    while n != 0
-      content = ""
-      start_day = Date.new(dstart.year,2,20) + @random.rand(0..29)
-      content << 'dstart = Date.parse("#{start_year}-' + "#{start_day.strftime('%m-%d')}" + '")'+"\n"
-      content << "dc.set_summary_rule('送別会#{reccrence['FAREWELL-PARTY'] - n + 1}', :no_makeup)\n"
-      content << "dc.set_interval({:n => 365, :range => -7..7}, 1)\n"
-      content << "dc.set_timing('bulk')\n"
-      content << "dc.set_during(240)\n"
-      content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-      content << "dc.add_param(:other_events, {:n => 50, :seed => 9999#{@pattern_num}}, 1)\n"
-      content << "(start_year..end_year).each do |year|\n"
-      content << '  dc.add_param(:order, {:date => Date.parse("#{year+1}-02-12"), :direction => :after}, 5)'+"\n"
-      content << '  dc.add_param(:order, {:date => Date.parse("#{year+1}-03-25"), :direction => :before}, 5)'+"\n"
-      content << "end\n"
-
-      f = File.open(@path + "/#{format("11_%03d", @pattern_num)}", 'w')
-      f.write(content)
-      f.close
-
-      @pattern_num += 1
-      n -= 1
-    end
-end
-
-def generate_welcome_party(dstart, reccrence)
-  n = reccrence["WELCOME-PARTY"]
-    while n != 0
-      content = ""
-      start_day = Date.new(dstart.year,4,1)
-      content << 'dstart = Date.parse("#{start_year}-' + "#{start_day.strftime('%m-%d')}" + '")'+"\n"
-      content << "dc.set_summary_rule('歓迎会#{reccrence['WELCOME-PARTY'] - n + 1}', :no_makeup)\n"
-      content << "dc.set_interval({:n => 365, :range => -7..7}, 1)\n"
-      content << "dc.set_timing('bulk')\n"
-      content << "dc.set_during(240)\n"
-      content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-      content << "dc.add_param(:monthweek, {:month => 4, :week => 1, :flag => true}, 1)\n"
-      content << "dc.add_param(:other_events, {:n => 50, :seed => 9999#{@pattern_num}}, 1)\n"
-
-      f = File.open(@path + "/#{format("11_%03d", @pattern_num)}", 'w')
-      f.write(content)
-      f.close
-
-      @pattern_num += 1
-      n -= 1
-    end
-end
-
-def generate_year_end_party(dstart, reccrence)
-  n = reccrence["YEAR-END-PARTY"]
-    while n != 0
-      content = ""
-      start_day = Date.new(2016,12,2) + @random.rand(0..13)
-      content << 'dstart = Date.parse("#{start_year}-' + "#{start_day.strftime('%m-%d')}" + '")'+"\n"
-      content << "dc.set_summary_rule('忘年会#{reccrence['YEAR-END-PARTY'] - n + 1}', :no_makeup)\n"
-      content << "dc.set_interval({:n => 365, :range => -15..15}, 1)\n"
-      content << "dc.set_timing('bulk')\n"
-      content << "dc.set_during(240)\n"
-      content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-      content << "dc.add_param(:month, {:month => 12, :flag => true}, 1)\n"
-      content << "dc.add_param(:other_events, {:n => 50, :seed => 9999#{@pattern_num}}, 1)\n"
-      content << "(start_year..end_year).each do |year|\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-12-25"), :dend => Date.parse("#{year + 1}-01-03")}, 5)'+"\n"
-      content << "end\n"
-
-      f = File.open(@path + "/#{format("11_%03d", @pattern_num)}", 'w')
-      f.write(content)
-      f.close
-
-      @pattern_num += 1
-      n -= 1
-    end
-end
-
-def generate_event_hy(dstart, reccrence)
-  reccrence["EVENT-HY"].each do |event_hy|
-    cnt = 1
-    content = ""
-    content << 'dstart = Date.parse("#{start_year}-' + "#{format("%02d", event_hy[0])}-#{format("%02d", @random.rand(1..28))}" + '")'+"\n"
-    content << "dc.set_summary_rule('イベント(半期)#{cnt}', :no_makeup)\n"
-    content << "dc.set_interval({:n => 183, :range => -7..7}, 1)\n"
-    content << "dc.set_timing('bulk')\n"
-    content << "dc.set_during(240)\n"
-    content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-    content << "dc.add_param(:month, {:month => #{event_hy[0]}, :flag => true}, 1)\n"
-    content << "dc.add_param(:month, {:month => #{event_hy[1]}, :flag => true}, 1)\n"
-    content << "dc.add_param(:other_events, {:n => 50, :seed => 9999#{@pattern_num}}, 1)\n"
-
-    f = File.open(@path + "/#{format("12_%03d", @pattern_num)}", 'w')
-    f.write(content)
-    f.close
-
-    @pattern_num += 1
-    cnt += 1
+  case recurrence["TIMING"]
+  when 'bulk'
+    p_timing = '1'
+  when 'successively'
+    p_timing = '2'
   end
+  case recurrence["INTERVAL"]
+  when 365
+    p_interval = '1'
+  when 183
+    p_interval = '2'
+  when 120
+    p_interval = '3'
+  when 60
+    p_interval = '4'
+  when 30
+    p_interval = '5'
+  when 14
+    p_interval = '6'
+  when 7
+    p_interval = '7'
+  end
+  priority = p_timing + p_interval
+  f = File.open(@path + "/#{priority}_#{format("%03d", @pattern_num)}", 'w')
+  f.write(content)
+  f.close
+  @pattern_num += 1
 end
 
-def generate_event_1y(dstart, reccrence)
-  @month = 0
-  @cnt = 1
-  reccrence["EVENT-1Y"].each do |n|
-    @month += 1
-    while n != 0
-      content = ""
-      content << 'dstart = Date.parse("#{start_year}-' + "#{format("%02d", @month)}-#{format("%02d", @random.rand(1..28))}" + '")'+"\n"
-      content << "dc.set_summary_rule('イベント(1年)#{@cnt}', :no_makeup)\n"
-      content << "dc.set_interval({:n => 365, :range => -7..7}, 1)\n"
-      content << "dc.set_timing('bulk')\n"
-      content << "dc.set_during(240)\n"
-      content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-      content << "dc.add_param(:month, {:month => #{@month}, :flag => true}, 1)\n"
-      content << "dc.add_param(:other_events, {:n => 50, :seed => 9999#{@pattern_num}}, 1)\n"
-
-      f = File.open(@path + "/#{format("11_%03d", @pattern_num)}", 'w')
-      f.write(content)
-      f.close
-
-      @pattern_num += 1
-      @cnt += 1
-      n -= 1
-    end
-  end
-end
-
-def generate_recreation(dstart, reccrence)
-  reccrence["RECREATION"].each do |recreation|
-    cnt = 1
-    content = ""
-    content << 'dstart = Date.parse("#{start_year}-' + "#{format("%02d", recreation[0])}-#{format("%02d", @random.rand(1..28))}" + '")'+"\n"
-    content << "dc.set_summary_rule('レクリエーション#{cnt}', :no_makeup)\n"
-    content << "dc.set_interval({:n => #{365/recreation.length}, :range => -15..15}, 1)\n"
-    content << "dc.set_timing('bulk')\n"
-    content << "dc.set_during(240)\n"
-    content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-    recreation.each do |r|
-      content << "dc.add_param(:month, {:month => #{r}, :flag => true}, 1)\n"
-    end
-    content << "dc.add_param(:other_events, {:n => 50, :seed => 9999#{@pattern_num}}, 1)\n"
-    content << "(start_year..end_year).each do |year|\n"
-    content << '  dc.add_param(:order, {:date => Date.parse("#{year+1}-02-12"), :direction => :after}, 5)'+"\n"
-    content << '  dc.add_param(:order, {:date => Date.parse("#{year+1}-03-25"), :direction => :before}, 5)'+"\n"
-    content << "end\n"
-
-    f = File.open(@path + "/#{format("13_%03d", @pattern_num)}", 'w')
-    f.write(content)
-    f.close
-
-    @pattern_num += 1
-    cnt += 1
-  end
-end
-
-def generate_lecture(dstart, reccrence)
-  wday = [':Mon', ':Tue', ':Wed', ':Thu', ':Fri']
-  @day = 0
-  @cnt = 1
-  reccrence["LECTURE"]["PREVIOUS"].each do |n|
-    while n != 0
-      content = ""
-      content << 'dstart = Date.parse("#{start_year}-04-01")'+"\n"
-      content << "dc.set_summary_rule('講義(前期)#{@cnt}', :no_makeup)\n"
-      content << "dc.set_interval({:n => 7, :range => -3..3}, 1)\n"
-      content << "dc.set_timing('bulk')\n"
-      content << "dc.set_during(90)\n"
-      content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-      content << "dc.add_param(:wday, {:wday => #{wday[@day]}, :flag => true}, 1)\n"
-      content << "(start_year..end_year).each do |year|\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-01-01"), :dend => Date.parse("#{year}-04-07")}, 5)'+"\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-08-07"), :dend => Date.parse("#{year + 1}-03-31")}, 5)'+"\n"
-      content << "end\n"
-
-      f = File.open(@path + "/#{format("14_%03d", @pattern_num)}", 'w')
-      f.write(content)
-      f.close
-
-      @pattern_num += 1
-      @cnt += 1
-      n -= 1
-    end
-    @day += 1
-  end
-
-  @day = 0
-  reccrence["LECTURE"]["LATTER"].each do |n|
-    while n != 0
-      content = ""
-      content << 'dstart = Date.parse("#{start_year}-04-01")'+"\n"
-      content << "dc.set_summary_rule('講義(後期)#{@cnt}', :no_makeup)\n"
-      content << "dc.set_interval({:n => 7, :range => -3..3}, 1)\n"
-      content << "dc.set_timing('bulk')\n"
-      content << "dc.set_during(90)\n"
-      content << "dc.add_param(:holiday, {:flag => false}, 5)\n"
-      content << "dc.add_param(:wday, {:wday => #{wday[@day]}, :flag => true}, 1)\n"
-      content << "(start_year..end_year).each do |year|\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-04-01"), :dend => Date.parse("#{year}-09-30")}, 5)'+"\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-12-25"), :dend => Date.parse("#{year + 1}-01-03")}, 5)'+"\n"
-      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-02-07"), :dend => Date.parse("#{year + 1}-03-31")}, 5)'+"\n"
-      content << "end\n"
-
-      f = File.open(@path + "/#{format("14_%03d", @pattern_num)}", 'w')
-      f.write(content)
-      f.close
-
-      @pattern_num += 1
-      @cnt += 1
-      n -= 1
-    end
-    @day += 1
-  end
-end
-
-def generate_other(dstart, reccrence)
-  reccrence["OTHER"].each do |other|
-    content = ""
-    if other["DATE"]
-      start_day = "#{other["DATE"]}"
+def set_start_date(recurrence, dstart)
+  start_date = ""
+  if recurrence["DATE"]
+    month, date = recurrence["DATE"][0].split('/')
+    start_date = format("%02d-%02d", month.to_i, date.to_i)
+  elsif recurrence["MONTHWEEK"]
+    month, week = recurrence["MONTHWEEK"][0].split('-')
+    start_date = format("%02d-%02d", month.to_i, (week.to_i-1)*7+@random.rand(1..7))
+  elsif recurrence["MONTH"]
+    month = recurrence["MONTH"][0]
+    if month.to_i == 2
+      start_date = format("%02d-%02d", month.to_i, @random.rand(1..28))
     else
-      day = Date.new(dstart.year, other["MONTH"], other["WEEK"]*7) - @random.rand(0..6)
-      start_day = day.strftime('%m-%d')
+      start_date = format("%02d-%02d", month.to_i, @random.rand(1..30))
     end
-    content << 'dstart = Date.parse("#{start_year}-' + "#{start_day}" + '")'+"\n"
-    content << "dc.set_summary_rule('#{other["NAME"]}', :no_makeup)\n"
-    content << "dc.set_interval({:n => #{other["INTARVAL"]}, :range => -7..7}, 1)\n"
-    content << "dc.set_timing('bulk')\n"
-    content << "dc.set_during(360)\n"
-    if other["DATE"]
-      content << "dc.add_param(:date, {:month => #{start_day.split('-')[0].to_i}, :day => #{start_day.split('-')[1].to_i}, :flag => true}, 1)\n"
-    else
-      content << "dc.add_param(:wday, {:wday => :#{other["WDAY"]}, :flag => true}, 1)\n"
-      content << "dc.add_param(:monthweek, {:month => #{other["MONTH"]}, :week => #{other["WEEK"]}, :flag => true}, 1)\n"
-    end
-
-    f = File.open(@path + "/#{format("11_%03d", @pattern_num)}", 'w')
-    f.write(content)
-    f.close
-
-    @pattern_num += 1
+  else
+    start_date = (dstart + @random.rand(0..13)).strftime("%m-%d")
   end
+  return 'dstart = Date.parse("#{start_year}-' + start_date + '")' + "\n"
+end
+
+def set_summary(summary)
+  return "dc.set_summary_rule('#{summary}', :no_makeup)\n"
+end
+
+def set_interval(interval)
+  if interval.to_i < 14
+    range = 3
+  elsif interval.to_i < 120
+    range = 7
+  else
+    range = 15
+  end
+  return "dc.set_interval({:n => #{interval}, :range => -#{range}..#{range}}, 2)\n"
+end
+
+def set_during(during)
+  return "dc.set_during(#{during})\n"
+end
+
+def set_timing(timing)
+  return "dc.set_timing('#{timing}')\n"
+end
+
+def set_wday(wday)
+  content = ""
+  wday.each do |w|
+    content << "dc.add_param(:wday, {:wday => :#{w}, :flag => true}, 1)\n"
+  end
+  return content
+end
+
+def set_holiday(holiday)
+  return "dc.add_param(:holiday, {:flag => #{holiday}}, 5)\n"
+end
+
+def set_monthweek(monthweek)
+  content = ""
+  monthweek.each do |mw|
+    month, week = mw.split('-')
+    content << "dc.add_param(:monthweek, {:month => #{month}, :week => #{week}, :flag => true}, 1)\n"
+  end
+  return content
+end
+
+def set_month(month)
+  content = ""
+  month.each do |m|
+    content << "dc.add_param(:month, {:month => #{m}, :flag => true}, 1)\n"
+  end
+  return content
+end
+
+def set_date(date)
+  content = ""
+  date.each do |d|
+    month, day = d.split('/')
+    content << "dc.add_param(:date, {:month => #{month}, :day => #{day}, :flag => true}, 1)\n"
+  end
+  return content
+end
+
+def set_vacation_term(vacation_term, dstart)
+  content = "(start_year..end_year).each do |year|\n"
+  vacation_term.each do |term|
+    first, last = term.split('-')
+    st = Date.new(dstart.year, first.split('/')[0].to_i, first.split('/')[1].to_i)
+    en = Date.new(dstart.year, last.split('/')[0].to_i, last.split('/')[1].to_i)
+    if st < en
+      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-' + st.strftime("%m-%d") + '"), :dend => Date.parse("#{year}-' + en.strftime("%m-%d") + '")}, 5)'+"\n"
+    else # dendの方が日付が若い場合，dendを1年延ばす．
+      content << '  dc.add_param(:vacation_term, {:dstart => Date.parse("#{year}-' + st.strftime("%m-%d") + '"), :dend => Date.parse("#{year + 1}-' + en.strftime("%m-%d") + '")}, 5)'+"\n"
+    end
+  end
+  content << "end\n"
+  return content
+end
+
+def set_other_events(other_events)
+  if other_events
+    return "dc.add_param(:other_events, {:n => 50, :seed => 999999}, 5)\n"
+  end
+end
+
+def set_order(order)
+  content = "(start_year..end_year).each do |year|\n"
+  if order["AFTER"]
+    order["AFTER"].each do |date|
+      month, day = date.split('/')
+      content << '  dc.add_param(:order, {:date => Date.parse("#{year}-' + format("%02d-%02d", month, day) + '"), :direction => :after}, 1)'+"\n"
+    end
+  end
+  if order["SIMULTANEOUS"]
+    order["SIMULTANEOUS"].each do |date|
+      month, day = date.split('/')
+      content << '  dc.add_param(:order, {:date => Date.parse("#{year}-' + format("%02d-%02d", month, day) + '"), :direction => :simultaneous}, 1)'+"\n"
+    end
+  end
+  if order["BEFORE"]
+    order["BEFORE"].each do |date|
+      month, day = date.split('/')
+      content << '  dc.add_param(:order, {:date => Date.parse("#{year}-' + format("%02d-%02d", month, day) + '"), :direction => :before}, 1)'+"\n"
+    end
+  end
+  content << "end\n"
+  return content
+end
+
+def set_deadline(deadline)
+  content = "(start_year..end_year).each do |year|\n"
+  deadline.each do |dl|
+    month, day = dl.split('/')
+    content << '  dc.add_param(:deadline, {:date => Date.parse("#{year}-' + format("%02d-%02d", month, day) + '")}, 1)' + "\n"
+  end
+  content << "end\n"
+  return content
 end
 
 config = File.expand_path("../../config.yml", __FILE__)
@@ -334,6 +208,11 @@ rescue
   puts "ERROR: Invalid date"
   exit -1
 end
+
 seed = 1111
 @random = Random.new(seed)
-patterns = generate(dstart, dend, conf["RECCRENCE"])
+@path = File.expand_path("../../generated/patterns", __FILE__)
+@pattern_num = 1
+conf["RECURRENCE"].each do |recurrence|
+  generate(dstart, recurrence)
+end

@@ -42,7 +42,7 @@ end
 
 config = File.expand_path("../../config.yml", __FILE__)
 conf = YAML.load_file(config)
-events_par_month = conf["NON-RECCRENCE-RATE"]
+events_par_month = conf["NO-RECURRENCE-RATE"]
 dstart, dend = conf["RANGE"].split('-')
 begin
   dstart = Date.parse(dstart)

@@ -128,7 +128,7 @@ module DummyCalendar
         arr = Array.new(dates.length, 0)
         indexes = (0..(arr.length-1)).to_a.shuffle(:random => @seed)[1..n]
         indexes.each do |index|
-          arr[index] = 1
+          arr[index] = -1
         end
         return arr
       end
@@ -139,7 +139,7 @@ module DummyCalendar
       #---------------------------------------------------------------
       #              Date: ..., 2000-1-4, 1-5, 1-6, 1-7, 1-8, 1-9, ...
       # evaluation_values: ...,        0,   1,   1,   0,   0,   0, ...
-      def initialize(date, direction, term_length = 365)
+      def initialize(date, direction, term_length = 30)
         @date = date; @direction = direction; @term_length = term_length
       end
 
