@@ -35,6 +35,10 @@ module DummyCalendar
       @params = []
     end
 
+    def set_cal_name(val)
+      @cal_name = val
+    end
+
     def set_interval(opt, weight)
       @interval = {:param  => DummyCalendar::ParamBuilder.create(:interval, opt),
                    :weight => weight}
@@ -57,7 +61,7 @@ module DummyCalendar
       @during = val
     end
 
-    def generate(dstart, range, max_time)
+    def generate(dstart, range, max_time, cals)
       unless @interval
         puts 'Error: Interval parameter is required. You must call set_interval()'
         exit -1
@@ -70,7 +74,7 @@ module DummyCalendar
       dates = ((range.first)..(range.last + 366)).step(1).to_a
 
       next_dstart = dstart
-      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing, @during)]
+      result = [DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing, @during, @cal_name)]
 
       # Evaluate all params without interval param
       vals_params = evaluation_values(dates, dstart)
@@ -83,19 +87,23 @@ module DummyCalendar
         while 1
           indexes_of_candidate = indexes_of_max(vals_total)
           next_dstart_index = closest(indexes_of_candidate, index_of_pivot)
-          break unless $used_time[range.first + next_dstart_index]
-          if $used_time[range.first + next_dstart_index] + @during > max_time
-            vals_total[next_dstart_index] -= 100
-          else
-            break
+          break_flag = 0
+          cals[@cal_name]["user"].each do |name, val|
+            next unless $used_time[name][range.first + next_dstart_index]
+            if $used_time[name][range.first + next_dstart_index] + @during > max_time
+              vals_total[next_dstart_index] -= 100
+              break_frag = 1
+              break
+            end
           end
+          break if break_frag == 0
         end
 
         break if next_dstart >= dstart + next_dstart_index
         next_dstart = range.first + next_dstart_index
         break if next_dstart > range.last
 
-        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing, @during)
+        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing, @during, @cal_name)
         break if @timing == 'successively'
 
         vals_params = Array.new(next_dstart_index + 1, -999) + vals_params[(next_dstart_index+1)..-1]

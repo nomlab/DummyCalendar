@@ -42,4 +42,6 @@ db/schema.rb
 generated/*
 !generated/patterns/
 generated/patterns/*
+!generated/patterns/recurrence/
+generated/patterns/recurrence/*
 !.gitkeep

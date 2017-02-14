@@ -12,9 +12,11 @@ require "rubygems"
 require 'yaml'
 require 'date'
 require 'icalendar'
+require 'json'
 
-def generate(dstart, recurrence)
+def generate(dstart, cal_name, recurrence)
   content = ""
+  content << set_cal_name(cal_name)
   content << set_start_date(recurrence, dstart)
   content << set_summary(recurrence["SUMMARY"]) if recurrence["SUMMARY"]
   content << set_interval(recurrence["INTERVAL"]) if recurrence["INTERVAL"]
@@ -53,10 +55,14 @@ def generate(dstart, recurrence)
     p_interval = '7'
   end
   priority = p_timing + p_interval
-  f = File.open(@path + "/#{priority}_#{format("%03d", @pattern_num)}", 'w')
+  f = File.open(@path + "/recurrence" + "/#{priority}_#{format("%03d", @pattern_num)}", 'w')
   f.write(content)
   f.close
   @pattern_num += 1
+end
+
+def set_cal_name(name)
+  return "dc.set_cal_name('#{name}')\n"
 end
 
 def set_start_date(recurrence, dstart)
@@ -213,6 +219,15 @@ seed = 1111
 @random = Random.new(seed)
 @path = File.expand_path("../../generated/patterns", __FILE__)
 @pattern_num = 1
-conf["RECURRENCE"].each do |recurrence|
-  generate(dstart, recurrence)
+cal_list = {}
+conf["CALENDARS"].each do |cal|
+  cal_list[cal["NAME"]] = {}
+  cal_list[cal["NAME"]]["CAL"] = {}
+  cal_list[cal["NAME"]]["USER"] = cal["USER"]
+  cal["RECURRENCE"].each do |recurrence|
+    generate(dstart, cal["NAME"], recurrence)
+  end
 end
+f = File.open(@path + "/cal_list", 'w')
+f.write(cal_list.to_json)
+f.close

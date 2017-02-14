@@ -8,18 +8,20 @@ module DummyCalendar
       @events = []
     end
 
-    def add_event(event, range)
-      if $used_time[event.dstart]
-        $used_time[event.dstart] += event.during
-      else
-        $used_time[event.dstart] = event.during
+    def add_event(event, range, users)
+      users.each do |name, val|
+        if $used_time[name][event.dstart]
+          $used_time[name][event.dstart] += event.during
+        else
+          $used_time[name][event.dstart] = event.during
+        end
       end
       @events << event if event.dstart.between?(range.first, range.last)
     end
 
-    def add_events(events, range)
+    def add_events(events, range, users)
       events.each do |e|
-        add_event(e, range)
+        add_event(e, range, users)
       end
     end
 
@@ -43,16 +45,16 @@ module DummyCalendar
       end
     end
 
-    def add_non_reccrence(max_time, range)
-      path = File.expand_path("../../../generated/non_rec.ics", __FILE__)
+    def add_non_reccrence(max_time, range, name, users)
+      path = File.expand_path("../../../generated/non_rec_#{name}.ics", __FILE__)
       f = File.open(path)
       event = Icalendar.parse(f, true)
       devents = []
       event.events.each do |e|
-        devent = DummyCalendar::Event.new(e.summary, e.dtstart, e.dtstart, 'no_reccring_event', 'bulk', max_time)
+        devent = DummyCalendar::Event.new(e.summary, e.dtstart, e.dtstart, 'no_reccring_event', 'bulk', max_time, name)
         devents << devent
       end
-      add_events(devents, range)
+      add_events(devents, range, users)
     end
   end
 end

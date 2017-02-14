@@ -40,9 +40,10 @@ def really_event_generate?(events_par_month)
   return false
 end
 
+seed = 0
+@random = Random.new(seed)
 config = File.expand_path("../../config.yml", __FILE__)
 conf = YAML.load_file(config)
-events_par_month = conf["NO-RECURRENCE-RATE"]
 dstart, dend = conf["RANGE"].split('-')
 begin
   dstart = Date.parse(dstart)
@@ -52,11 +53,11 @@ rescue
   puts "ERROR: Invalid date"
   exit -1
 end
-
-seed = 0
-@random = Random.new(seed)
-non_rec_cal = generate(dstart, dend, events_par_month)
-path = File.expand_path("../../generated/non_rec.ics", __FILE__)
-f = File.open(path, 'w')
-f.write(non_rec_cal.to_ical)
-f.close
+conf["CALENDARS"].each do |cal|
+  events_par_month = cal["RANDOM_EVENTS_PER_MONTH"]
+  non_rec_cal = generate(dstart, dend, events_par_month)
+  path = File.expand_path("../../generated/non_rec_#{cal["NAME"]}.ics", __FILE__)
+  f = File.open(path, 'w')
+  f.write(non_rec_cal.to_ical)
+  f.close
+end

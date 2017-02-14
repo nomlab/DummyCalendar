@@ -1,398 +1,525 @@
 ---
-RANGE: "20150401-20160331"
-NO-RECURRENCE-RATE: 2
-MAX-TIME: 360
-RECURRENCE:
+RANGE: "20160401-20170331"
+WORKING_HOURS: 360
+CALENDARS:
   -
-    SUMMARY: ミーティング1
-    DURING: 120
-    TIMING: successively
-    INTERVAL: 14
-    HOLIDAY: false
-    OTHER_EVENTS: true
-    VACATION_TERM:
-      - 8/10-8/14
-      - 12/25-1/3
-    DEADLINE:
-      - 2/5
+    NAME: nomlab
+    RANDOM_EVENTS_PER_MONTH: 2
+    USER:
+      T: 30
+      A1: 5
+      A2: 5
+      A3: 5
+      B1: 5
+      C1: 5
+      C2: 5
+      D1: 5
+      D2: 5
+      D3: 5
+      E1: 5
+      E2: 5
+      E3: 5
+      F1: 5
+      F2: 5
+    PARTICIPANT_BORDER: 90
+    RECURRENCE:
+      -
+        SUMMARY: 進捗報告会1
+        DURING: 120
+        TIMING: successively
+        INTERVAL: 30
+        HOLIDAY: false
+        OTHER_EVENTS: true
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
+      -
+        SUMMARY: 誕生日会
+        INTERVAL: 183
+        DURING: 120
+        TIMING: bulk
+        HOLIDAY: false
+        MONTH:
+          - 2
+          - 3
+          - 9
+          - 10
+        OTHER_EVENTS: true
+      -
+        SUMMARY: 卒業アルバム撮影
+        INTERVAL: 365
+        DURING: 120
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 11-2
+        OTHER_EVENTS: true
+      -
+        SUMMARY: 送別会1
+        INTERVAL: 365
+        DURING: 240
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 2-4
+          - 2-5
+          - 3-1
+          - 3-2
+        OTHER_EVENTS: true
+        ORDER:
+          AFTER:
+            - 2/12
+          BEFORE:
+            - 3/25
+      -
+        SUMMARY: 研究室大掃除
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 3-4
+          - 3-5
+        ORDER:
+          BEFORE:
+            - 4/1
+      -
+        SUMMARY: 忘年会2
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: true
+        MONTH:
+          - 11
+        OTHER_EVENTS: true
+      -
+        SUMMARY: スポーツ大会
+        INTERVAL: 120
+        DURING: 240
+        TIMING: bulk
+        HOLIDAY: false
+        MONTH:
+          - 2
+          - 5
+          - 10
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
+        OTHER_EVENTS: true
   -
-    SUMMARY: ミーティング2
-    DURING: 120
-    TIMING: successively
-    INTERVAL: 14
-    HOLIDAY: false
-    OTHER_EVENTS: true
-    VACATION_TERM:
-      - 8/10-8/14
-      - 12/25-1/3
+    NAME: swlab
+    RANDOM_EVENTS_PER_MONTH: 1
+    USER:
+      T: 30
+      A1: 5
+      A2: 5
+      A3: 5
+      B1: 5
+      C1: 5
+      C2: 5
+      D1: 5
+      D2: 5
+      D3: 5
+      E1: 5
+      E2: 5
+      E3: 5
+      F1: 5
+      F2: 5
+    PARTICIPANT_BORDER: 80
+    RECURRENCE:
+      -
+        SUMMARY: 進捗報告会2
+        INTERVAL: 30
+        DURING: 120
+        TIMING: successively
+        HOLIDAY: false
+        OTHER_EVENTS: true
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
+      -
+        SUMMARY: 忘年会1
+        INTERVAL: 365
+        DURING: 240
+        TIMING: bulk
+        HOLIDAY: false
+        MONTH:
+          - 12
+        OTHER_EVENTS: true
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
+      -
+        SUMMARY: M2中間発表
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 11-4
+          - 11-5
+          - 12-1
+          - 12-2
+      -
+        SUMMARY: M1論文紹介
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 10-4
+          - 10-5
+          - 11-1
+          - 11-2
+      -
+        SUMMARY: M2論文紹介
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 6-4
+          - 6-5
+          - 7-1
+          - 7-2
+      -
+        SUMMARY: 暑気払い
+        INTERVAL: 365
+        DURING: 240
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 7-1
+          - 7-2
+        OTHER_EVENTS: true
+      -
+        SUMMARY: 研修会
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 8-4
+          - 8-5
+          - 9-1
+        OTHER_EVENTS: true
+        ORDER:
+          AFTER:
+            - 8/20
+          BEFORE:
+            - 9/4
+      -
+        SUMMARY: 歓迎会
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 4-1
+        ORDER:
+          AFTER:
+            - 4/1
+      -
+        SUMMARY: 送別会2
+        INTERVAL: 365
+        DURING: 240
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 2-4
+          - 2-5
+          - 3-1
+          - 3-2
+        OTHER_EVENTS: true
+        ORDER:
+          AFTER:
+            - 2/12
+          BEFORE:
+            - 3/25
+      -
+        SUMMARY: レクリエーション
+        INTERVAL: 120
+        DURING: 240
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 3-1
+          - 3-2
+          - 3-3
+          - 5-1
+          - 5-2
+          - 5-3
+          - 9-2
+          - 9-3
+          - 9-4
+        OTHER_EVENTS: true
   -
-    SUMMARY: 進捗報告会1
-    DURING: 120
-    TIMING: successively
-    INTERVAL: 30
-    HOLIDAY: false
-    OTHER_EVENTS: true
-    VACATION_TERM:
-      - 8/10-8/14
-      - 12/25-1/3
+    NAME: university
+    RANDOM_EVENTS_PER_MONTH: 0
+    USER:
+      T: 30
+      A1: 5
+      A2: 5
+      A3: 5
+      B1: 5
+      C1: 5
+      C2: 5
+      D1: 5
+      D2: 5
+      D3: 5
+      E1: 5
+      E2: 5
+      E3: 5
+      F1: 5
+      F2: 5
+    PARTICIPANT_BORDER: 100
+    RECURRENCE:
+      -
+        SUMMARY: B4中間発表
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 11-2
+          - 11-3
+      -
+        SUMMARY: オープンキャンパス
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 8-1
+          - 8-2
+      -
+        SUMMARY: 卒論発表
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 2-2
+          - 2-3
+        ORDER:
+          AFTER:
+            - 2/6
+      -
+        SUMMARY: 修論発表
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        HOLIDAY: false
+        MONTHWEEK:
+          - 2-2
+          - 2-3
+        ORDER:
+          AFTER:
+            - 2/5
+      -
+        SUMMARY: 大学の推薦入試
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        MONTHWEEK:
+          - 12-1
+        WDAY:
+          - Sat
+      -
+        SUMMARY: 大学の編入試験
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        MONTHWEEK:
+          - 6-4
+        WDAY:
+          - Tue
+      -
+        SUMMARY: 大学の卒業式
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        DATE:
+          - 3/25
+      -
+        SUMMARY: 防災訓練
+        INTERVAL: 365
+        DURING: 120
+        TIMING: bulk
+        MONTH:
+          - 11
+      -
+        SUMMARY: 講義1
+        INTERVAL: 7
+        DURING: 90
+        TIMING: bulk
+        HOLIDAY: false
+        WDAY:
+          - Fri
+        VACATION_TERM:
+          - 1/1-4/7
+          - 7/31-3/31
+      -
+        SUMMARY: 講義2
+        INTERVAL: 7
+        DURING: 90
+        TIMING: bulk
+        HOLIDAY: false
+        WDAY:
+          - Wed
+        VACATION_TERM:
+          - 1/1-4/7
+          - 7/31-3/31
+      -
+        SUMMARY: 講義3
+        INTERVAL: 7
+        DURING: 90
+        TIMING: bulk
+        HOLIDAY: false
+        WDAY:
+          - Tue
+        VACATION_TERM:
+          - 1/1-4/7
+          - 7/31-3/31
+      -
+        SUMMARY: 講義4
+        INTERVAL: 7
+        DURING: 90
+        TIMING: bulk
+        HOLIDAY: false
+        WDAY:
+          - Wed
+        VACATION_TERM:
+          - 2/7-3/31
+          - 4/1-9/30
+          - 12/25-1/3
+      -
+        SUMMARY: 講義5
+        INTERVAL: 7
+        DURING: 90
+        TIMING: bulk
+        HOLIDAY: false
+        WDAY:
+          - Thu
+        VACATION_TERM:
+          - 2/7-3/31
+          - 4/1-9/30
+          - 12/25-1/3
+      -
+        SUMMARY: 大学の前期入試
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        DATE:
+          - 2/25
+      -
+        SUMMARY: 大学の後期入試
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        DATE:
+          - 3/12
+      -
+        SUMMARY: 大学の入学式
+        INTERVAL: 365
+        DURING: 360
+        TIMING: bulk
+        DATE:
+          - 4/8
   -
-    SUMMARY: 進捗報告会2
-    INTERVAL: 30
-    DURING: 120
-    TIMING: successively
-    HOLIDAY: false
-    OTHER_EVENTS: true
-    VACATION_TERM:
-      - 8/10-8/14
-      - 12/25-1/3
+    NAME: gn
+    RANDOM_EVENTS_PER_MONTH: 0
+    USER:
+      T: 40
+      A1: 5
+      A2: 5
+      A3: 5
+      C1: 5
+      C2: 5
+      E1: 5
+      E2: 5
+      E3: 5
+    PARTICIPANT_BORDER: 70
+    RECURRENCE:
+      -
+        SUMMARY: ミーティング1
+        DURING: 120
+        TIMING: successively
+        INTERVAL: 14
+        HOLIDAY: false
+        OTHER_EVENTS: true
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
+        DEADLINE:
+          - 2/5
+      -
+        SUMMARY: ミーティング2
+        DURING: 120
+        TIMING: successively
+        INTERVAL: 14
+        HOLIDAY: false
+        OTHER_EVENTS: true
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
   -
-    SUMMARY: 進捗報告会3
-    INTERVAL: 30
-    DURING: 120
-    TIMING: successively
-    HOLIDAY: false
-    OTHER_EVENTS: true
-    VACATION_TERM:
-      - 8/10-8/14
-      - 12/25-1/3
+    NAME: new
+    RANDOM_EVENTS_PER_MONTH: 0
+    USER:
+      T: 40
+      B1: 5
+      D1: 5
+      D2: 5
+      D3: 5
+      F1: 5
+      F2: 5
+    PARTICIPANT_BORDER: 60
+    RECURRENCE:
+      -
+        SUMMARY: ミーティング3
+        DURING: 120
+        TIMING: successively
+        INTERVAL: 14
+        HOLIDAY: false
+        OTHER_EVENTS: true
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
+        DEADLINE:
+          - 2/5
+      -
+        SUMMARY: ミーティング4
+        DURING: 120
+        TIMING: successively
+        INTERVAL: 14
+        HOLIDAY: false
+        OTHER_EVENTS: true
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
   -
-    SUMMARY: 誕生日会
-    INTERVAL: 183
-    DURING: 120
-    TIMING: bulk
-    HOLIDAY: false
-    MONTH:
-      - 2
-      - 3
-      - 9
-      - 10
-    OTHER_EVENTS: true
-  -
-    SUMMARY: 忘年会1
-    INTERVAL: 365
-    DURING: 240
-    TIMING: bulk
-    HOLIDAY: false
-    MONTH:
-      - 12
-    OTHER_EVENTS: true
-    VACATION_TERM:
-      - 8/10-8/14
-      - 12/25-1/3
-  -
-    SUMMARY: M2中間発表
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 11-4
-      - 11-5
-      - 12-1
-      - 12-2
-  -
-    SUMMARY: B4中間発表
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 11-2
-      - 11-3
-  -
-    SUMMARY: M1論文紹介
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 10-4
-      - 10-5
-      - 11-1
-      - 11-2
-  -
-    SUMMARY: M2論文紹介
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 6-4
-      - 6-5
-      - 7-1
-      - 7-2
-  -
-    SUMMARY: オープンキャンパス
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 8-1
-      - 8-2
-  -
-    SUMMARY: 卒論発表
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 2-2
-      - 2-3
-    ORDER:
-      AFTER:
-        - 2/6
-  -
-    SUMMARY: 修論発表
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 2-2
-      - 2-3
-    ORDER:
-      AFTER:
-        - 2/5
-  -
-    SUMMARY: 暑気払い
-    INTERVAL: 365
-    DURING: 240
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 7-1
-      - 7-2
-    OTHER_EVENTS: true
-  -
-    SUMMARY: 卒業アルバム撮影
-    INTERVAL: 365
-    DURING: 120
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 11-2
-    OTHER_EVENTS: true
-  -
-    SUMMARY: 研修会
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 8-4
-      - 8-5
-      - 9-1
-    OTHER_EVENTS: true
-    ORDER:
-      AFTER:
-        - 8/20
-      BEFORE:
-        - 9/4
-  -
-    SUMMARY: 歓迎会
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 4-1
-    ORDER:
-      AFTER:
-        - 4/1
-  -
-    SUMMARY: 送別会1
-    INTERVAL: 365
-    DURING: 240
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 2-4
-      - 2-5
-      - 3-1
-      - 3-2
-    OTHER_EVENTS: true
-    ORDER:
-      AFTER:
-        - 2/12
-      BEFORE:
-        - 3/25
-  -
-    SUMMARY: 送別会2
-    INTERVAL: 365
-    DURING: 240
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 2-4
-      - 2-5
-      - 3-1
-      - 3-2
-    OTHER_EVENTS: true
-    ORDER:
-      AFTER:
-        - 2/12
-      BEFORE:
-        - 3/25
-  -
-    SUMMARY: 研究室大掃除
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 3-4
-      - 3-5
-    ORDER:
-      BEFORE:
-        - 4/1
-  -
-    SUMMARY: 大学の推薦入試
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    MONTHWEEK:
-      - 12-1
-    WDAY:
-      - Sat
-  -
-    SUMMARY: 大学の編入試験
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    MONTHWEEK:
-      - 6-4
-    WDAY:
-      - Tue
-  -
-    SUMMARY: 大学の卒業式
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    DATE:
-      - 3/25
-  -
-    SUMMARY: 忘年会2
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    HOLIDAY: true
-    MONTH:
-      - 11
-    OTHER_EVENTS: true
-  -
-    SUMMARY: 防災訓練
-    INTERVAL: 365
-    DURING: 120
-    TIMING: bulk
-    MONTH:
-      - 11
-  -
-    SUMMARY: レクリエーション
-    INTERVAL: 120
-    DURING: 240
-    TIMING: bulk
-    HOLIDAY: false
-    MONTHWEEK:
-      - 3-1
-      - 3-2
-      - 3-3
-      - 5-1
-      - 5-2
-      - 5-3
-      - 9-2
-      - 9-3
-      - 9-4
-    OTHER_EVENTS: true
-  -
-    SUMMARY: 講義1
-    INTERVAL: 7
-    DURING: 90
-    TIMING: bulk
-    HOLIDAY: false
-    WDAY:
-      - Fri
-    VACATION_TERM:
-      - 1/1-4/7
-      - 7/31-3/31
-  -
-    SUMMARY: 講義2
-    INTERVAL: 7
-    DURING: 90
-    TIMING: bulk
-    HOLIDAY: false
-    WDAY:
-      - Wed
-    VACATION_TERM:
-      - 1/1-4/7
-      - 7/31-3/31
-  -
-    SUMMARY: 講義3
-    INTERVAL: 7
-    DURING: 90
-    TIMING: bulk
-    HOLIDAY: false
-    WDAY:
-      - Tue
-    VACATION_TERM:
-      - 1/1-4/7
-      - 7/31-3/31
-  -
-    SUMMARY: 講義4
-    INTERVAL: 7
-    DURING: 90
-    TIMING: bulk
-    HOLIDAY: false
-    WDAY:
-      - Wed
-    VACATION_TERM:
-      - 2/7-3/31
-      - 4/1-9/30
-      - 12/25-1/3
-  -
-    SUMMARY: 講義5
-    INTERVAL: 7
-    DURING: 90
-    TIMING: bulk
-    HOLIDAY: false
-    WDAY:
-      - Thu
-    VACATION_TERM:
-      - 2/7-3/31
-      - 4/1-9/30
-      - 12/25-1/3
-  -
-    SUMMARY: スポーツ大会
-    INTERVAL: 120
-    DURING: 240
-    TIMING: bulk
-    HOLIDAY: false
-    MONTH:
-      - 2
-      - 5
-      - 10
-    VACATION_TERM:
-      - 8/10-8/14
-      - 12/25-1/3
-    OTHER_EVENTS: true
-  -
-    SUMMARY: 大学の前期入試
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    DATE:
-      - 2/25
-  -
-    SUMMARY: 大学の後期入試
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    DATE:
-      - 3/12
-  -
-    SUMMARY: 大学の入学式
-    INTERVAL: 365
-    DURING: 360
-    TIMING: bulk
-    DATE:
-      - 4/8
+    NAME: net-mgr
+    RANDOM_EVENTS_PER_MONTH: 0
+    USER:
+      T: 30
+      A1: 5
+      A2: 5
+      A3: 5
+      C2: 5
+      D2: 5
+      D3: 5
+      E2: 5
+      F2: 5
+    PARTICIPANT_BORDER: 60
+    RECURRENCE:
+      -
+        SUMMARY: 進捗報告会3
+        INTERVAL: 30
+        DURING: 120
+        TIMING: successively
+        HOLIDAY: false
+        OTHER_EVENTS: true
+        VACATION_TERM:
+          - 8/10-8/14
+          - 12/25-1/3
