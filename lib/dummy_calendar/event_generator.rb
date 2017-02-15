@@ -84,26 +84,32 @@ module DummyCalendar
         vals_total = vals_params.zip(vals_interval).map{|f,s| f + s * @interval[:weight]}
 
         index_of_pivot = (next_dstart + @interval[:param].n - range.first).to_i
+        @candidate_list = []
         while 1
           indexes_of_candidate = indexes_of_max(vals_total)
           next_dstart_index = closest(indexes_of_candidate, index_of_pivot)
-          break_flag = 0
+          break if vals_total[next_dstart_index] < 3
+          @participant_val = 0
           cals[@cal_name]["user"].each do |name, val|
-            next unless $used_time[name][range.first + next_dstart_index]
-            if $used_time[name][range.first + next_dstart_index] + @during > max_time
-              vals_total[next_dstart_index] -= 100
-              break_frag = 1
-              break
+            unless $used_time[name][range.first + next_dstart_index]
+              @participant_val += val
+              next
+            end
+            if $used_time[name][range.first + next_dstart_index] + @during < max_time
+              @participant_val += val
             end
           end
-          break if break_frag == 0
+          vals_total[next_dstart_index] -= 100
+          if @participant_val > cals[@cal_name]["BORDER"]
+            @candidate_list << naxt_dstart_index
+          end
         end
 
-        break if next_dstart >= dstart + next_dstart_index
-        next_dstart = range.first + next_dstart_index
+        break if next_dstart >= dstart + candidate_list[0]
+        next_dstart = range.first + candidate_list[0]
         break if next_dstart > range.last
 
-        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing, @during, @cal_name)
+        result << DummyCalendar::Event.new(@summary_rule.create(next_dstart), next_dstart, next_dstart, @recurrence_tag, @timing, @during, @cal_name, @candidate_list)
         break if @timing == 'successively'
 
         vals_params = Array.new(next_dstart_index + 1, -999) + vals_params[(next_dstart_index+1)..-1]

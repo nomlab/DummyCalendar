@@ -3,9 +3,9 @@ require 'icalendar'
 
 module DummyCalendar
   class Event
-    attr_accessor :summary, :dstart, :dend, :recurrence_tag, :timing, :during, :categories
+    attr_accessor :summary, :dstart, :dend, :recurrence_tag, :timing, :during, :categories, :candidate_list
 
-    def initialize(summary, dstart, dend, recurrence_tag, timing, during, categories)
+    def initialize(summary, dstart, dend, recurrence_tag, timing, during, categories, candidate_list)
       @summary = summary
       @dstart = dstart
       @dend = dend
@@ -13,6 +13,7 @@ module DummyCalendar
       @timing = timing
       @during = during
       @categories = categories
+      @candidate_list = candidate_list
     end
 
     def pretty_print

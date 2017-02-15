@@ -224,6 +224,7 @@ conf["CALENDARS"].each do |cal|
   cal_list[cal["NAME"]] = {}
   cal_list[cal["NAME"]]["CAL"] = {}
   cal_list[cal["NAME"]]["USER"] = cal["USER"]
+  cal_list[cal["NAME"]]["BORDER"] = cal["PARTICIPANT_BORDER"]
   cal["RECURRENCE"].each do |recurrence|
     generate(dstart, cal["NAME"], recurrence)
   end
