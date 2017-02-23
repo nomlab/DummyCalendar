@@ -82,6 +82,7 @@ module DummyCalendar
       while 1
         vals_interval = @interval[:param].evaluation_values(dates, next_dstart)
         vals_total = vals_params.zip(vals_interval).map{|f,s| f + s * @interval[:weight]}
+        vals_orig = vals_total
 
         index_of_pivot = (next_dstart + @interval[:param].n - range.first).to_i
         @candidate_list = []
@@ -103,6 +104,9 @@ module DummyCalendar
           if @participant_val > cals[@cal_name]["BORDER"]
             @candidate_list << naxt_dstart_index
           end
+        end
+
+        if @candidate_list.length == 0
         end
 
         break if next_dstart >= dstart + candidate_list[0]
