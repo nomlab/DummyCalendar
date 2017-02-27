@@ -5,7 +5,7 @@ require 'date'
 require 'icalendar'
 require 'json'
 
-module DummyCalendar
+module Parrot
   class Recurrence
     attr_accessor :summary, :next_date, :interval, :duration, :timing
 
@@ -82,7 +82,7 @@ module DummyCalendar
     private
 
     def add_param(name, opt, weight)
-      @params << {:param  => DummyCalendar::ParamBuilder.create(name, opt),
+      @params << {:param  => Parrot::ParamBuilder.create(name, opt),
                   :weight => weight}
     end
 
@@ -99,7 +99,7 @@ module DummyCalendar
         range = 15
       end
       opt = {:n => interval, :range => ((-1)*range)..range}
-      @interval = {:param  => DummyCalendar::ParamBuilder.create(:interval, opt),
+      @interval = {:param  => Parrot::ParamBuilder.create(:interval, opt),
                    :weight => 2}
     end
 

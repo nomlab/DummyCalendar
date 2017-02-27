@@ -1,7 +1,7 @@
 require 'date'
 require 'icalendar'
 
-module DummyCalendar
+module Parrot
   class Event
     attr_accessor :summary, :calendar, :users, :dstart, :dend
 
@@ -19,7 +19,7 @@ module DummyCalendar
     def generate_occurrence
       date_list = @rec.calculate_next_date
       date = check_participant(date_list)
-      occ = DummyCalendar::Occurrence.new(date, self)
+      occ = Parrot::Occurrence.new(date, self)
       @calendar.add_event(occ)
     end
 
@@ -27,7 +27,7 @@ module DummyCalendar
 
     def generate_recurrence(pattern)
       start_date = set_start_date(pattern)
-      rec = DummyCalendar::Recurrence.new(summary, start_date)
+      rec = Parrot::Recurrence.new(summary, start_date)
       rec.define_parameters(pattern)
       return rec
     end

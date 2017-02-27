@@ -1,7 +1,7 @@
 require 'date'
 require 'holidays'
 
-module DummyCalendar
+module Parrot
   module Param
     class Term
       def initialize(dstart, dend, flag)
@@ -108,7 +108,7 @@ module DummyCalendar
 
     class VacationTerm
       def initialize(dstart, dend)
-        @dc = DummyCalendar::Param::Term.new(dstart, dend, false)
+        @dc = Parrot::Param::Term.new(dstart, dend, false)
       end
 
       def evaluation_values(dates)

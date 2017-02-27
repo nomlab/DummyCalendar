@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'date'
 
-module DummyCalendar
+module Parrot
   module SummaryRule
     class Base
       def initialize(base_name)

@@ -1,6 +1,6 @@
 require 'icalendar'
 
-module DummyCalendar
+module Parrot
   class Occurrence
     attr_accessor :dstart, :dend, :event
 

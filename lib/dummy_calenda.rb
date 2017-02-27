@@ -3,8 +3,8 @@ require 'date'
 require 'holidays'
 require 'icalendar'
 
-module DummyCalendar
-  dir = File.dirname(__FILE__) + "/dummy_calendar"
+module Parrot
+  dir = File.dirname(__FILE__) + "/dummy_calenda"
   autoload :Calendar,            "#{dir}/calendar.rb"
   autoload :Event,               "#{dir}/event.rb"
   autoload :Recurrence,          "#{dir}/recurrence.rb"

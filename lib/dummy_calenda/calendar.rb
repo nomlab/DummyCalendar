@@ -1,6 +1,6 @@
 require 'icalendar'
 
-module DummyCalendar
+module Parrot
   class Calendar
     attr_accessor :name, :border, :users, :events
 
@@ -58,7 +58,7 @@ module DummyCalendar
       event = Icalendar.parse(f, true)
       devents = []
       event.events.each do |e|
-        devent = DummyCalendar::Event.new(e.summary, e.dtstart, e.dtstart, 'no_reccring_event', 'bulk', max_time, name)
+        devent = Parrot::Event.new(e.summary, e.dtstart, e.dtstart, 'no_reccring_event', 'bulk', max_time, name)
         devents << devent
       end
       add_events(devents, range, users)

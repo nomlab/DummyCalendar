@@ -1,6 +1,6 @@
 require 'icalendar'
 
-module DummyCalendar
+module Parrot
   class User
     attr_accessor :name, :calendars
 
