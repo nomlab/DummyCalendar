@@ -5,14 +5,15 @@ module DummyCalendar
   class Event
     attr_accessor :summary, :calendar, :users, :dstart, :dend
 
-    def initialize(summary, calendar, users, dstart, dend, pattern)
+    def initialize(summary, calendar, pattern)
       @summary = summary
       @calendar = calendar
-      @users = users
-      @dstart = dstart
-      @dend = dend
       @random = Random.new
       @rec = generate_recurrence(pattern)
+    end
+
+    def next_generate_date
+      return @rec.next_generate_date
     end
 
     def generate_occurrence
@@ -26,8 +27,8 @@ module DummyCalendar
 
     def generate_recurrence(pattern)
       start_date = set_start_date(pattern)
-      rec = DummyCalendar::Recurrence.new(categories, start_date)
-      rec.define_parameters(dstart, pattern)
+      rec = DummyCalendar::Recurrence.new(summary, start_date)
+      rec.define_parameters(pattern)
       return rec
     end
 
@@ -35,20 +36,21 @@ module DummyCalendar
       start_date = ""
       if recurrence["DATE"]
         month, date = recurrence["DATE"][0].split('/')
-        start_date = format("%02d-%02d", month.to_i, date.to_i)
+        start_date = Date.new($dstart.year, month.to_i, date.to_i)
       elsif recurrence["MONTHWEEK"]
         month, week = recurrence["MONTHWEEK"][0].split('-')
-        start_date = format("%02d-%02d", month.to_i, (week.to_i-1)*7+@random.rand(1..7))
+        start_date = Date.new($dstart.year, month.to_i, (week.to_i-1)*7+@random.rand(1..7))
       elsif recurrence["MONTH"]
         month = recurrence["MONTH"][0]
         if month.to_i == 2
-          start_date = format("%02d-%02d", month.to_i, @random.rand(1..28))
+          start_date = Date.new($dstart.year, month.to_i, @random.rand(1..28))
         else
-          start_date = format("%02d-%02d", month.to_i, @random.rand(1..30))
+          start_date = Date.new($dstart.year, month.to_i, @random.rand(1..30))
         end
       else
-        start_date = (dstart + @random.rand(0..13)).strftime("%m-%d")
+        start_date = ($dstart + @random.rand(0..13))
       end
+      start_date += 365 unless start_date.between?($dstart, $dend)
       return start_date
     end
 

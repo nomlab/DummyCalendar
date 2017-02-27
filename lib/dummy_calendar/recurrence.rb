@@ -52,11 +52,31 @@ module DummyCalendar
       if candidate_list.length == 0
       end
 
-      break if @next_date >= dstart + candidate_list[0]
-      @next_date = range.first + candidate_list[0]
-      break if @next_date > range.last
+      @next_date = $dstart + candidate_list[0]
 
       return candidate_list
+    end
+
+    def next_generate_date
+      if @timing == 'successively'
+        return @next_date
+      else
+        dates = []
+        @timing.each do |timing|
+          month, date = timing.split('/')
+          d = Date.new(@next_date, month.to_i, date.to_i)
+          dates << d
+        end
+        dates.sort!
+        dates.each do |d|
+          next if d <=> @next_date == -1
+          return d
+        end
+        return dates[0].next_year
+        else
+          return d
+        end
+      end
     end
 
     private

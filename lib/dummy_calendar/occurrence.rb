@@ -1,28 +1,13 @@
 require 'icalendar'
 
 module DummyCalendar
-  class User
-    attr_accessor :used_time
+  class Occurrence
+    attr_accessor :dstart, :dend, :event
 
-    def initialize
-      @used_time = []
-    end
-
-    def add_time(dstart, time)
-      if @used_time
-        @used_time[dstart] += time
-      else
-        @used_time[dstart] = time
-      end
-    end
-
-    def move_time(src, dest, time)
-      @used_time[src] -= time
-      add_time(dest, time)
-    end
-
-    def show_time(dstart)
-      return @used_time[dstart]
+    def initialize(dstart, dend, event)
+      @dstart = dstart
+      @dend = dend
+      @event = event
     end
   end
 end

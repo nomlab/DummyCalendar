@@ -2,10 +2,17 @@ require 'icalendar'
 
 module DummyCalendar
   class Calendar
-    attr_accessor :events
+    attr_accessor :name, :border, :users, :events
 
-    def initialize
+    def initialize(name, border)
+      @name = name
+      @border = border
+      @users = []
       @events = []
+    end
+
+    def add_user(user)
+      @users << user
     end
 
     def add_event(event, range, users)

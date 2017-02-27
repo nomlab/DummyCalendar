@@ -2,27 +2,15 @@ require 'icalendar'
 
 module DummyCalendar
   class User
-    attr_accessor :used_time
+    attr_accessor :name, :calendars
 
-    def initialize
-      @used_time = []
+    def initialize(name, calendars)
+      @name = name
+      @calendars = calendars
     end
 
-    def add_time(dstart, time)
-      if @used_time
-        @used_time[dstart] += time
-      else
-        @used_time[dstart] = time
-      end
-    end
-
-    def move_time(src, dest, time)
-      @used_time[src] -= time
-      add_time(dest, time)
-    end
-
-    def show_time(dstart)
-      return @used_time[dstart]
+    def reserved_time(dstart)
+      return time
     end
   end
 end

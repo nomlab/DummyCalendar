@@ -65,26 +65,26 @@ class DummyCalendarCLI < Thor
   desc "generate", "Generate dummy events."
 
   method_option :name, :required => true, :desc => 'pattern name or `all`'
-  method_option :range, :required => true, :banner => 'FROM-TO', :desc => 'YYYYMMDD-YYYYMMDD'
+  # method_option :range, :required => true, :banner => 'FROM-TO', :desc => 'YYYYMMDD-YYYYMMDD'
   method_option :format, :default => 'csv', :desc => '`csv` or `ics`'
-  method_option :max_time, :default => 360
+  # method_option :max_time, :default => 360
 
   def generate
-    dstart, dend = options[:range].split('-')
-    begin
-      dstart = Date.parse(dstart)
-      dend   = Date.parse(dend)
-      raise if dstart >= dend
-    rescue
-      puts "ERROR: Invalid date"
-      exit -1
-    end
+    # dstart, dend = options[:range].split('-')
+    # begin
+    #   dstart = Date.parse(dstart)
+    #   dend   = Date.parse(dend)
+    #   raise if dstart >= dend
+    # rescue
+    #   puts "ERROR: Invalid date"
+    #   exit -1
+    # end
 
-    @cal = DummyCalendar::Calendar.new
-    event_next = {}
-    max_time = options[:max_time].to_i
-    orig_range = dstart..dend
-    dstart -= 365
+    # @cal = DummyCalendar::Calendar.new
+    # event_next = {}
+    # max_time = options[:max_time].to_i
+    # orig_range = dstart..dend
+    # dstart -= 365
 
     if options[:name] == 'all'
       patterns = pattern_names
@@ -93,37 +93,39 @@ class DummyCalendarCLI < Thor
         @cal.add_events(events, orig_range)
       end
     elsif options[:name] == 'group'
-      $used_time = {}
-      @cal = load_cal_list
-      @cal.each do |name, hash|
-        hash["cal"] = DummyCalendar::Calendar.new
-        hash["user"].each do |name, val|
-          $used_time[name] = {} if $used_time[name] == nil
-        end
-        hash["cal"].add_non_reccrence(max_time, orig_range, name, hash["user"])
+      event_next = {}
+      config = File.expand_path("../../config.yml", __FILE__)
+      conf = YAML.load_file(config)
+      dstart, dend = conf["RANGE"].split('-')
+      begin
+        $dstart = Date.parse(dstart)
+        $dend   = Date.parse(dend)
+        raise if dstart >= dend
+      rescue
+        puts "ERROR: Invalid date"
+        exit -1
       end
-      patterns = pattern_names
-      patterns.each do |pattern|
-        events = generate_dummy_events(pattern, dstart, dend, pattern, max_time, @cal)
-        if events[0].timing == 'successively'
-          @cal["#{events[0].categories}"]["cal"].add_event(events[0], orig_range, @cal["#{events[0].categories}"]["user"])
-          @cal["#{events[0].categories}"]["cal"].add_event(events[1], orig_range, @cal["#{events[0].categories}"]["user"])
-          event_next[pattern] = events[1].dstart.to_date
-        else
-          @cal["#{events[0].categories}"]["cal"].add_events(events, orig_range, @cal["#{events[0].categories}"]["user"])
-        end
+      max_time = conf["WORKING_HOURS"].to_i
+      orig_range = $dstart..$dend
+      $dstart -= 365
+
+      # Initialize calendars, users, and events
+      # When create event, set next date of generating
+      @cal = init_calendar(conf["CALENDARS"])
+      @user = init_user(conf["USERS"])
+      conf["RECURRENCE"].each do |recurrence|
+        de = DummyCalendar::Event.new(recurrence)
+        event_next[de] = de.next_generate_date
       end
-      now = dstart
-      while dend - now != 0
-        event_next.each do |key,val|
-          if now - val == 0
-            events = generate_dummy_events_dbyd(key, now, dend, key, max_time, @cal)
-            if events[1].nil?
-              event_next[key] = dend + 1
-            else
-              @cal["#{events[0].categories}"]["cal"].add_event(events[1], orig_range, @cal["#{events[0].categories}"]["user"])
-              event_next[key] = events[1].dstart.to_date
-            end
+
+      # Check each date of generating range
+      # If checked next date of generating, generate next occurrence
+      now = $dstart
+      while $dend - now > 0
+        event_next.each do |event, date|
+          if now - date == 0
+            event.generate_occurrence
+            event_next[event] = event.next_generate_date
           end
         end
         now += 1
@@ -171,36 +173,29 @@ class DummyCalendarCLI < Thor
     return dc.generate(dstart, range, max_time, cals)
   end
 
-  # eval File.readでdstart_nextを書き換えてしまうため，別名をつけたメソッドを用意した
-  def generate_dummy_events_dbyd(name, dstart_next, dend, recurrence_tag, max_time, cals)
-    dc = DummyCalendar::EventGenerator.new(recurrence_tag)
-    range = dstart_next..dend
-    start_year = dstart_next.year
-    end_year = dend.year
-
-    filenames = Dir.glob("#{DB_PATH}/recurrence/*").map{|path| path.split('/').last}
-    if filenames.include?(name)
-      eval File.read "#{DB_PATH}/recurrence/#{name}"
-    else
-      return nil
-    end
-
-    return dc.generate(dstart_next, range, max_time, cals)
-  end
-
   def pattern_names
     filenames = Dir.glob("#{DB_PATH}/recurrence/*").map{|path| path.split('/').last}
   end
 
-  def load_cal_list
-    begin
-      json = File.read "#{DB_PATH}/cal_list"
-    rescue
-      puts "Please run pattern_gen first."
-      exit(1)
+  def init_calendar(cals)
+    cal_list = {}
+    cals.each do |cal|
+      dc = DummyCalendar::Calendar.new(cal["NAME"], cal["PARTICIPANT_BORDER"])
+      cal_list[dc.name] = dc
     end
-    cal_list = JSON.parse(json)
     return cal_list
+  end
+
+  def init_user(users)
+    user_list = {}
+    users.each do |name, hash|
+      du = DummyCalendar::User.new(name, hash)
+      user_list[du.name] = du
+      hash.each do |name ,val|
+        @cal_list[name].add_user(du)
+      end
+    end
+    return user_list
   end
 end
 
