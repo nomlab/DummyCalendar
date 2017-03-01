@@ -1,7 +1,7 @@
 * parrot
 ** Setting config.yml
 Example:
-`
+#+BEGIN_SRC yml
 ---
 RANGE: "20160401-20170331"
 WORKING_HOURS: 10:00-17:00
@@ -67,8 +67,11 @@ RECURRENCE:
     ORDER:
       AFTER:
         - 4/1
-`
+#+END_SRC
+
 
 ** Useage
-`$ ./rand_gen`
-`$ ./parrot --name=group --format=ics`
+#+BEGIN_SRC sh
+$ ./rand_gen
+$ ./parrot --name=group --format=ics
+#+END_SRC
