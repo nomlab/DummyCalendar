@@ -1,17 +1,74 @@
-* 設計
-GN検討打合せ資料の<No.183-04>に基づく
+* parrot
+** Setting config.yml
+Example:
+`
+---
+RANGE: "20160401-20170331"
+WORKING_HOURS: 10:00-17:00
+CALENDARS:
+  -
+    NAME: xxxxxx
+    RANDOM_EVENTS_PER_MONTH: 2
+    PARTICIPANT_BORDER: 50
+  -
+    NAME: yyyyyy
+    RANDOM_EVENTS_PER_MONTH: 1
+    PARTICIPANT_BORDER: 40
+USER:
+  A:
+    xxxxxx: 30
+    yyyyyy: 30
+  B:
+    xxxxxx: 10
+    yyyyyy: 10
+  C:
+    xxxxxx: 10
+    yyyyyy: 10
+RECURRENCE:
+  -
+    SUMMARY: 進捗報告会
+    CALENDAR: xxxxxx
+    DURATION: 120
+    TIMING: successively
+    INTERVAL: 30
+    HOLIDAY: false
+    HIDDEN_EVENTS: true
+    VACATION_TERM:
+      - 8/10-8/14
+      - 12/25-1/3
+  -
+    SUMMARY: レクリエーション
+    CALENDAR: xxxxxx
+    INTERVAL: 120
+    DURATION: 240
+    TIMING:
+      - 1/15
+      - 4/15
+      - 9/15
+    HOLIDAY: false
+    MONTH:
+      - 2
+      - 5
+      - 10
+    VACATION_TERM:
+      - 8/10-8/14
+      - 12/25-1/3
+    HIDDEN_EVENTS: true
+  -
+    SUMMARY: 歓迎会
+    CALENDAR: yyyyyy
+    INTERVAL: 365
+    DURATION: 240
+    TIMING:
+      - 3/1
+    HOLIDAY: false
+    MONTHWEEK:
+      - 4-1
+    ORDER:
+      AFTER:
+        - 4/1
+`
 
-recurrence_name は patterns/ 以下のファイル名
-これらのファイルは自作できる．
-中身見たらなんとなくわかると思う.
-自作したやつをそこに置いとけばその名前で使える
-
-例: gn_meetingのダミーデータ生成
-```
-$ ./bin/dcal generate --range=20140401-20160330 --name=gn_meeting --format=ics
-```
-
-nameには，すべてのリカーレンスを出力するallという識別子を特別に用意している
-```
-$ ./bin/dcal generate --range=20140401-20160330 --name=all --format=ics > dummy.ics
-```
+** Useage
+`$ ./rand_gen`
+`$ ./parrot --name=group --format=ics`
