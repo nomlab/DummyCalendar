@@ -1,6 +1,6 @@
 ---
 RANGE: "20160401-20170331"
-WORKING_HOURS: 360
+WORKING_HOURS: "10:00-17:00"
 CALENDARS:
   -
     NAME: nomlab
@@ -9,84 +9,24 @@ CALENDARS:
   -
     NAME: swlab
     RANDOM_EVENTS_PER_MONTH: 1
-    USER:
-      T: 30
-      M2GN1: 5
-      M2GN2: 5
-      M2GN3: 5
-      M2New1: 5
-      M1GN1: 5
-      M1GN2: 5
-      M1New1: 5
-      M1New2: 5
-      M1New3: 5
-      B4GN1: 5
-      B4GN2: 5
-      B4GN3: 5
-      B4New1: 5
-      B4New2: 5
     PARTICIPANT_BORDER: 80
   -
     NAME: university
     RANDOM_EVENTS_PER_MONTH: 0
-    USER:
-      T: 30
-      M2GN1: 5
-      M2GN2: 5
-      M2GN3: 5
-      M2New1: 5
-      M1GN1: 5
-      M1GN2: 5
-      M1New1: 5
-      M1New2: 5
-      M1New3: 5
-      B4GN1: 5
-      B4GN2: 5
-      B4GN3: 5
-      B4New1: 5
-      B4New2: 5
     PARTICIPANT_BORDER: 100
   -
     NAME: gn
     RANDOM_EVENTS_PER_MONTH: 0
-    USER:
-      T: 40
-      M2GN1: 5
-      M2GN2: 5
-      M2GN3: 5
-      M1GN1: 5
-      M1GN2: 5
-      B4GN1: 5
-      B4GN2: 5
-      B4GN3: 5
     PARTICIPANT_BORDER: 70
   -
     NAME: new
     RANDOM_EVENTS_PER_MONTH: 0
-    USER:
-      T: 40
-      M2New1: 5
-      M1New1: 5
-      M1New2: 5
-      M1New3: 5
-      B4New1: 5
-      B4New2: 5
     PARTICIPANT_BORDER: 60
   -
     NAME: net-mgr
     RANDOM_EVENTS_PER_MONTH: 0
-    USER:
-      T: 30
-      M2GN1: 5
-      M2GN2: 5
-      M2GN3: 5
-      M1GN2: 5
-      M1New2: 5
-      M1New3: 5
-      B4GN2: 5
-      B4New2: 5
     PARTICIPANT_BORDER: 60
-USER:
+USERS:
   T:
     nomlab: 30
     swlab: 30
