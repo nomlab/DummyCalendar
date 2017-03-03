@@ -105,16 +105,17 @@ class ParrotCLI < Thor
         puts "ERROR: Invalid date"
         exit -1
       end
-      max_time = conf["WORKING_HOURS"].to_i
-      orig_range = $dstart..$dend
-      $dstart -= 365
+      st, et = conf["WORKING_HOURS"].split('-')
+      $max_time = (et.split(':')[0].to_i - st.split(':')[0].to_i)*60 + et.split(':')[1].to_i - st.split(':')[1].to_i
+      $orig_range = $dstart..$dend
+      $dstart -= 366
 
       # Initialize calendars, users, and events
       # When create event, set next date of generating
       @cal = init_calendar(conf["CALENDARS"])
       @user = init_user(conf["USERS"])
       conf["RECURRENCE"].each do |recurrence|
-        de = Parrot::Event.new(recurrence)
+        de = Parrot::Event.new(recurrence, @cal[recurrence["CALENDAR"]])
         event_next[de] = de.next_generate_date
       end
 
@@ -122,6 +123,7 @@ class ParrotCLI < Thor
       # If checked next date of generating, generate next occurrence
       now = $dstart
       while $dend - now > 0
+        puts now if now.day == 1
         event_next.each do |event, date|
           if now - date == 0
             event.generate_occurrence
@@ -145,9 +147,11 @@ class ParrotCLI < Thor
     when 'csv' then @cal.print_events
     when 'ics' then
       if options[:name] == 'group'
-        @cal.each do |name, hash|
+        @cal.each do |name, calendar|
           puts name
-          puts hash["cal"].to_ics
+          f = File.open(DB_PATH+"/../#{name}.ics", 'w')
+          f.write calendar.to_ics
+          f.close
         end
       else
         puts @cal.to_ics
@@ -180,7 +184,7 @@ class ParrotCLI < Thor
   def init_calendar(cals)
     cal_list = {}
     cals.each do |cal|
-      dc = Parrot::Calendar.new(cal["NAME"], cal["PARTICIPANT_BORDER"])
+      dc = Parrot::Calendar.new(cal["NAME"], cal["PARTICIPANT_BORDER"], cal["RANDOM_EVENTS_PER_MONTH"])
       cal_list[dc.name] = dc
     end
     return cal_list
@@ -189,10 +193,14 @@ class ParrotCLI < Thor
   def init_user(users)
     user_list = {}
     users.each do |name, hash|
-      du = Parrot::User.new(name, hash)
+      calendars = {}
+      hash.each do |name, val|
+        calendars[@cal[name]] = val
+      end
+      du = Parrot::User.new(name, calendars)
       user_list[du.name] = du
       hash.each do |name ,val|
-        @cal_list[name].add_user(du)
+        @cal[name].add_user(du)
       end
     end
     return user_list

@@ -44,7 +44,7 @@ module Parrot
 
     class Wday
       def initialize(wday, flag)
-        @wday = {:Sun=>0, :Mon=>1, :Tue=>2, :Wed=>3, :Thu=>4, :Fri=>5, :Sat=>6}[wday]
+        @wday = {"Sun"=>0, "Mon"=>1, "Tue"=>2, "Wed"=>3, "Thu"=>4, "Fri"=>5, "Sat"=>6}[wday]
         @flag = flag ? 1 : -1
       end
 

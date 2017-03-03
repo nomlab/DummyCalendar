@@ -1,12 +1,14 @@
+# coding: utf-8
 require 'date'
 require 'icalendar'
 
 module Parrot
   class Event
-    attr_accessor :summary, :calendar, :users, :dstart, :dend
+    attr_accessor :summary, :duration, :calendar
 
-    def initialize(summary, calendar, pattern)
-      @summary = summary
+    def initialize(pattern, calendar)
+      @summary = pattern["SUMMARY"]
+      @duration = pattern["DURATION"]
       @calendar = calendar
       @random = Random.new
       @rec = generate_recurrence(pattern)
@@ -19,8 +21,23 @@ module Parrot
     def generate_occurrence
       date_list = @rec.calculate_next_date
       date = check_participant(date_list)
-      occ = Parrot::Occurrence.new(date, self)
+      occ = Parrot::Occurrence.new(date, date, self)
       @calendar.add_event(occ)
+
+      gen_border = next_generate_date
+      pre_ndate = @rec.next_date
+      while 1
+        break if @rec.timing == 'successively'
+        date_list = @rec.calculate_next_date
+        date = check_participant(date_list)
+        if (date <=> gen_border) == 1 # WIP
+          @rec.next_date = pre_ndate
+          break
+        end
+        occ = Parrot::Occurrence.new(date, date, self)
+        @calendar.add_event(occ)
+        pre_ndate = @rec.next_date
+      end
     end
 
     private
@@ -55,7 +72,19 @@ module Parrot
     end
 
     def check_participant(date_list)
-      # WIP
+      date_list.each do |date|
+        score = 0
+        @calendar.users.each do |user|
+          if user.join?(date, @rec.duration)
+            user.calendars.each do |cal, val|
+              score += val if cal.name == @calendar.name
+            end
+          end
+        end
+        return date if score >= @calendar.border
+      end
+      # すべての候補日で参加者が閾値を超えない場合であるため，他の予定の入れ替え処理を行う必要がある
+      return date_list[0] # FIXME
     end
   end
 end
