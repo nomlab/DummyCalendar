@@ -159,7 +159,7 @@ class ParrotCLI < Thor
     when 'json' then
       @cal.each do |name, calendar|
         puts name
-          f = File.open(DB_PATH+"/../#{name}.json", 'w')
+          f = File.open(DB_PATH+"/../../full-calendar/#{name}.json", 'w')
           f.write calendar.to_json
           f.close
       end
