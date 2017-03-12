@@ -1,5 +1,7 @@
 # coding: utf-8
 require 'icalendar'
+require 'json'
+require 'securerandom'
 
 module Parrot
   class Calendar
@@ -47,6 +49,21 @@ module Parrot
         end
       end
       return cal.to_ical
+    end
+
+    def to_json
+      json = []
+      events.each do |e|
+        hash = {}
+        hash["id"] = SecureRandom.uuid.upcase
+        hash["allDay"] = true
+        hash["title"] = e.event.summary
+        hash["start"] = e.dstart.to_s
+        hash["end"] = e.dend.to_s
+        hash["className"] = ["parrot-#{name}"]
+        json << hash
+      end
+      return json.to_json
     end
 
     # def print_events
