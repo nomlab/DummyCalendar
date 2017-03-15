@@ -93,6 +93,7 @@ class ParrotCLI < Thor
         @cal.add_events(events, orig_range)
       end
     elsif options[:name] == 'group'
+      $overlap_count = 0
       event_next = {}
       config = File.expand_path("../../config.yml", __FILE__)
       conf = YAML.load_file(config)

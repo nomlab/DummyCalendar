@@ -21,7 +21,13 @@ module Parrot
     def generate_occurrence
       date_list = @rec.calculate_next_date
       date = check_participant(date_list)
-      occ = Parrot::Occurrence.new(date, date, self)
+      if @msg == ""
+        occ = Parrot::Occurrence.new(date, date, self)
+      else
+        e = self.clone
+        e.summary = @msg + e.summary
+        occ = Parrot::Occurrence.new(date, date, e)
+      end
       @calendar.add_event(occ)
 
       gen_border = next_generate_date
@@ -30,11 +36,17 @@ module Parrot
         break if @rec.timing == 'successively'
         date_list = @rec.calculate_next_date
         date = check_participant(date_list)
-        if (date <=> gen_border) == 1 # WIP
+        if (date <=> gen_border) == 1
           @rec.next_date = pre_ndate
           break
         end
-        occ = Parrot::Occurrence.new(date, date, self)
+        if @msg == ""
+          occ = Parrot::Occurrence.new(date, date, self)
+        else
+          e = self.clone
+          e.summary = @msg + e.summary
+          occ = Parrot::Occurrence.new(date, date, e)
+        end
         @calendar.add_event(occ)
         pre_ndate = @rec.next_date
       end
@@ -72,6 +84,7 @@ module Parrot
     end
 
     def check_participant(date_list)
+      @msg = ""
       date_list.each do |date|
         score = 0
         @calendar.users.each do |user|
@@ -81,7 +94,28 @@ module Parrot
             end
           end
         end
-        return date if score >= @calendar.border
+        if score >= @calendar.border
+          return date
+        else
+          cal_list = []
+          @calendar.users.each do |user|
+            user.calendars.each do |cal, val|
+              cal_list << cal
+            end
+          end
+          cal_list.uniq.each do |cal|
+            cal.events.each do |event|
+              if (event.dstart <=> date_list[0]) == 0
+                puts "Overlap #{event.event.summary}"
+                e = event.event.clone
+                e.summary = "#{$overlap_count}.ex," + e.summary
+                event.event = e
+                @msg += "#{$overlap_count}.new,"
+                $overlap_count += 1
+              end
+            end
+          end
+        end
       end
       # すべての候補日で参加者が閾値を超えない場合であるため，他の予定の入れ替え処理を行う必要がある
       return date_list[0] # FIXME
