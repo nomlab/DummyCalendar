@@ -26,7 +26,7 @@ $(document).ready(function() {
     month: 'HH:mm',
     week: 'HH:mm',
     day: 'HH:mm',
-    eventSources: ["./nomlab.json", "./swlab.json", "./gn.json", "./new.json", "./net-mgr.json", "./univrsity.json"],
+    eventSources: ["./nomlab.json", "./swlab.json", "./gn.json", "./new.json", "./net-mgr.json", "./university.json"],
 
     viewDisplay: function(view) {
       alert(view.name);
