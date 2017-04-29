@@ -26,7 +26,7 @@ module Parrot
       set_month(recurrence["MONTH"]) if recurrence["MONTH"]
       set_date(recurrence["DATE"]) if recurrence["DATE"]
       set_vacation_term(recurrence["VACATION_TERM"]) if recurrence["VACATION_TERM"]
-      set_hidden_events(recurrence["HIDDEN_EVENTS"]) if recurrence["HIDDEN_EVENTS"] != nil
+      # set_hidden_events(recurrence["HIDDEN_EVENTS"]) if recurrence["HIDDEN_EVENTS"] != nil
       set_order(recurrence["ORDER"]) if recurrence["ORDER"]
       set_deadline(recurrence["DEADLINE"]) if recurrence["DEADLINE"]
     end
@@ -51,6 +51,8 @@ module Parrot
       end
 
       if candidate_list.length == 0
+        date = $dstart + @next_date_index
+        return nil unless date.between?($orig_range.first, $orig_range.last)
         puts summary, @params.to_json
         puts vals_total[@next_date_index-5..@next_date_index+5]
         puts $dstart + @next_date_index

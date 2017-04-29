@@ -90,7 +90,7 @@ module Parrot
 
     def event_generate(create_day)
       event = Parrot::SingleEvent.new('単発の予定', $max_time, self)
-      occ = Parrot::Occurrence.new(create_day, create_day, event)
+      occ = Parrot::Occurrence.new(create_day, create_day, [create_day], event)
       return occ
     end
 

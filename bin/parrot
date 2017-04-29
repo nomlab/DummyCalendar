@@ -109,29 +109,29 @@ class ParrotCLI < Thor
       st, et = conf["WORKING_HOURS"].split('-')
       $max_time = (et.split(':')[0].to_i - st.split(':')[0].to_i)*60 + et.split(':')[1].to_i - st.split(':')[1].to_i
       $orig_range = $dstart..$dend
-      $dstart -= 366
+      $dstart -= 400
 
       # Initialize calendars, users, and events
       # When create event, set next date of generating
-      @cal = init_calendar(conf["CALENDARS"])
-      @user = init_user(conf["USERS"])
+      $cals = init_calendar(conf["CALENDARS"])
+      $users = init_user(conf["USERS"])
       conf["RECURRENCE"].each do |recurrence|
-        de = Parrot::Event.new(recurrence, @cal[recurrence["CALENDAR"]])
+        de = Parrot::Event.new(recurrence, $cals[recurrence["CALENDAR"]])
         event_next[de] = de.next_generate_date
       end
 
       # Check each date of generating range
       # If checked next date of generating, generate next occurrence
-      now = $dstart
-      while $dend - now > 0
-        puts now if now.day == 1
+      $now = $dstart
+      while $dend - $now > 0
+        puts $now if ($now.day % 10) == 1
         event_next.each do |event, date|
-          if now - date == 0
+          if $now - date == 0
             event.generate_occurrence
             event_next[event] = event.next_generate_date
           end
         end
-        now += 1
+        $now += 1
       end
     else
       options[:name].split(',').each do |name|
@@ -145,10 +145,10 @@ class ParrotCLI < Thor
     end
 
     case options[:format]
-    when 'csv' then @cal.print_events
+    when 'csv' then $cals.print_events
     when 'ics' then
       if options[:name] == 'group'
-        @cal.each do |name, calendar|
+        $cals.each do |name, calendar|
           puts name
           f = File.open(DB_PATH+"/../#{name}.ics", 'w')
           f.write calendar.to_ics
@@ -158,7 +158,7 @@ class ParrotCLI < Thor
         puts @cal.to_ics
       end
     when 'json' then
-      @cal.each do |name, calendar|
+      $cals.each do |name, calendar|
         puts name
           f = File.open(DB_PATH+"/../../full-calendar/#{name}.json", 'w')
           f.write calendar.to_json
@@ -203,12 +203,12 @@ class ParrotCLI < Thor
     users.each do |name, hash|
       calendars = {}
       hash.each do |name, val|
-        calendars[@cal[name]] = val
+        calendars[$cals[name]] = val
       end
       du = Parrot::User.new(name, calendars)
       user_list[du.name] = du
       hash.each do |name ,val|
-        @cal[name].add_user(du)
+        $cals[name].add_user(du)
       end
     end
     return user_list

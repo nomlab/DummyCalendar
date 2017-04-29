@@ -4,7 +4,7 @@ require 'icalendar'
 
 module Parrot
   class Event
-    attr_accessor :summary, :duration, :calendar
+    attr_accessor :summary, :duration, :calendar, :rec
 
     def initialize(pattern, calendar)
       @summary = pattern["SUMMARY"]
@@ -20,36 +20,54 @@ module Parrot
 
     def generate_occurrence
       date_list = @rec.calculate_next_date
-      date = check_participant(date_list)
-      if @msg == ""
-        occ = Parrot::Occurrence.new(date, date, self)
-      else
-        e = self.clone
-        e.summary = @msg + e.summary
-        occ = Parrot::Occurrence.new(date, date, e)
-      end
+      return if date_list.nil?
+      date, ch_event = optimize_date(date_list)
+      # if @msg == ""
+      #   occ = Parrot::Occurrence.new(date, date, date_list, self)
+      # else
+      #   e = self.clone
+      #   e.summary = @msg + e.summary
+      #   occ = Parrot::Occurrence.new(date, date, date_list, e)
+      # end
+      occ = Parrot::Occurrence.new(date, date, date_list, self)
       @calendar.add_event(occ)
+      ch_event.event.change_date(ch_event) if ch_event
 
       gen_border = next_generate_date
       pre_ndate = @rec.next_date
       while 1
         break if @rec.timing == 'successively'
         date_list = @rec.calculate_next_date
-        date = check_participant(date_list)
+        return if date_list.nil?
+        date, ch_event = optimize_date(date_list)
         if (date <=> gen_border) == 1
           @rec.next_date = pre_ndate
           break
         end
-        if @msg == ""
-          occ = Parrot::Occurrence.new(date, date, self)
-        else
-          e = self.clone
-          e.summary = @msg + e.summary
-          occ = Parrot::Occurrence.new(date, date, e)
-        end
+        ### TMP
+        # if @msg == ""
+        #   occ = Parrot::Occurrence.new(date, date, date_list, self)
+        # else
+        #   e = self.clone
+        #   e.summary = @msg + e.summary
+        #   occ = Parrot::Occurrence.new(date, date, date_list, e)
+        # end
+        ###
+        occ = Parrot::Occurrence.new(date, date, date_list, self)
         @calendar.add_event(occ)
+        ch_event.event.change_date(ch_event) if ch_event
         pre_ndate = @rec.next_date
       end
+    end
+
+    def change_date(event)
+      event.candidate_list = event.candidate_list[1..-1]
+      date, ch_event = optimize_date(event.candidate_list)
+      puts "----#{event.dstart}, #{event.event.summary}"
+      event.dstart = date
+      event.dend = date
+      puts "----#{event.dstart}"
+      ch_event.event.change_date(ch_event) if ch_event
     end
 
     private
@@ -83,42 +101,147 @@ module Parrot
       return start_date
     end
 
-    def check_participant(date_list)
+    def optimize_date(date_list)
       @msg = ""
-      date_list.each do |date|
-        score = 0
-        @calendar.users.each do |user|
-          if user.join?(date, @rec.duration)
-            user.calendars.each do |cal, val|
-              score += val if cal.name == @calendar.name
+      date = date_list.first
+      p_score = 0
+      @calendar.users.each do |user|
+        if user.join?(date, @rec.duration)
+          user.calendars.each do |cal, val|
+            p_score += val if cal.name == @calendar.name
+          end
+        end
+      end
+      puts date, @summary
+      puts p_score, @calendar.border
+      puts p_score >= @calendar.border
+      if p_score >= @calendar.border
+        return date, nil
+      else
+        overlap_list = []
+        $cals.each do |name, cal|
+          cal.events.each do |event|
+            if (event.dstart <=> date) == 0
+              overlap_list << event
+              ##### TMP
+              # puts "Overlap #{event.event.summary}"
+              # e = event.event.clone
+              # e.summary = "#{$overlap_count}.ex," + e.summary
+              # event.event = e
+              # @msg += "#{$overlap_count}.new,"
+              # $overlap_count += 1
+              #####
             end
           end
         end
-        if score >= @calendar.border
-          return date
+        min_c_score = 10000000
+        ch_event = nil
+        overlap_list.each do |event|
+          c_score, dist_date = calc_score_if_changed(event.candidate_list, overlap_list, event)
+          if min_c_score > c_score
+            ch_event = event
+            ch_date = dist_date
+            min_c_score = c_score
+          end
+        end
+        c_score, dist_date = calc_score_if_changed(date_list, overlap_list, nil)
+        if min_c_score > c_score
+          # ###### TMP
+          # p_score = 0
+          # date_list.each do |date|
+          #   @calendar.users.each do |user|
+          #     if user.join?(date, @rec.duration)
+          #       user.calendars.each do |cal, val|
+          #         p_score += val if cal.name == @calendar.name
+          #       end
+          #     end
+          #   end
+          #   if p_score >= @calendar.border
+          #     return date
+          #   end
+          # end
+          # #####
+          return optimize_date(date_list[1..-1])
         else
-          cal_list = []
-          @calendar.users.each do |user|
+          return date_list[0], ch_event
+        end
+      end
+    end
+
+    def calc_score_if_changed(candidate_list, event_list, changed_event)
+      changed_p_score = 0
+      if changed_event
+        if changed_event.event.class != self.class # class is SingleEvent
+          return 100000, changed_event.dstart
+        end
+        changed_event.event.calendar.users.each do |user|
+          if user.join?(candidate_list[1], changed_event.event.rec.duration)
             user.calendars.each do |cal, val|
-              cal_list << cal
+              changed_p_score += val if cal.name == changed_event.event.calendar.name
             end
           end
-          cal_list.uniq.each do |cal|
-            cal.events.each do |event|
-              if (event.dstart <=> date_list[0]) == 0
-                puts "Overlap #{event.event.summary}"
-                e = event.event.clone
-                e.summary = "#{$overlap_count}.ex," + e.summary
-                event.event = e
-                @msg += "#{$overlap_count}.new,"
-                $overlap_count += 1
+        end
+        event_list.each do |e|
+          next if e == changed_event
+          if e.event.class != self.class # class is SingleEvent
+            e.event.calendar.users.each do |user|
+              user.calendars.each do |cal, val|
+                changed_p_score += val if cal.name == e.event.calendar.name
+              end
+            end
+          else
+            e.event.calendar.users.each do |user|
+              if user.join?(e.dstart, e.event.rec.duration)
+                user.calendars.each do |cal, val|
+                  changed_p_score += val if cal.name == e.event.calendar.name
+                end
               end
             end
           end
         end
+
+        diff = (candidate_list[1] - candidate_list[0]).abs
+        reliability_score = changed_event.event.rec.interval[:param].n / diff
+
+        days_left = changed_event.dstart - $now
+        if days_left != 0
+          left_score = 1 / days_left
+        else
+          left_score = 0
+        end
+
+        num_user = changed_event.event.calendar.users.length
+
+        return changed_p_score + reliability_score*100 + left_score*100 + num_user*50, candidate_list[1]
+      else
+        @calendar.users.each do |user|
+          if user.join?(candidate_list[1], @rec.duration)
+            user.calendars.each do |cal, val|
+              changed_p_score += val if cal.name == @calendar.name
+            end
+          end
+        end
+        event_list.each do |e|
+          if e.class != self.class # class is SingleEvent
+            e.event.calendar.users.each do |user|
+              user.calendars.each do |cal, val|
+                changed_p_score += val if cal.name == e.event.calendar.name
+              end
+            end
+          else
+            e.event.calendar.users.each do |user|
+              if user.join?(e.dstart, e.event.rec.duration)
+                user.calendars.each do |cal, val|
+                  changed_p_score += val if cal.name == e.event.calendar.name
+                end
+              end
+            end
+          end
+        end
+        diff = (candidate_list[1] - candidate_list[0]).abs
+        reliability_score = @rec.interval[:param].n / diff
+        return changed_p_score + reliability_score*100, candidate_list[1]
       end
-      # すべての候補日で参加者が閾値を超えない場合であるため，他の予定の入れ替え処理を行う必要がある
-      return date_list[0] # FIXME
     end
   end
 end
