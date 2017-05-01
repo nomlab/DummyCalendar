@@ -200,8 +200,8 @@ module Parrot
           end
         end
 
-        diff = (candidate_list[1] - candidate_list[0]).abs
-        reliability_score = changed_event.event.rec.interval[:param].n / diff
+        # diff = (candidate_list[1] - candidate_list[0]).abs
+        # reliability_score = changed_event.event.rec.interval[:param].n / diff
 
         days_left = changed_event.dstart - $now
         if days_left != 0
@@ -209,10 +209,12 @@ module Parrot
         else
           left_score = 0
         end
-
         num_user = changed_event.event.calendar.users.length
 
-        return changed_p_score + reliability_score*100 + left_score*100 + num_user*50, candidate_list[1]
+        change_cost = num_user + Math.log(days_left + 2)
+        change_cost = 1 if change_cost < 1
+
+        return changed_p_score / change_cost, candidate_list[1]
       else
         @calendar.users.each do |user|
           if user.join?(candidate_list[1], @rec.duration)
@@ -238,9 +240,9 @@ module Parrot
             end
           end
         end
-        diff = (candidate_list[1] - candidate_list[0]).abs
-        reliability_score = @rec.interval[:param].n / diff
-        return changed_p_score + reliability_score*100, candidate_list[1]
+        # diff = (candidate_list[1] - candidate_list[0]).abs
+        # reliability_score = @rec.interval[:param].n / diff
+        return changed_p_score, candidate_list[1]
       end
     end
   end
